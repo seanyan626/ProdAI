@@ -1,0 +1,17 @@
+# Core dependencies
+python-dotenv
+openai
+
+# For RAG (example, choose your preferred libraries)
+# langchain
+# llama-index
+# faiss-cpu  # or faiss-gpu
+# sentence-transformers
+
+# For development and testing
+# pytest
+# ruff # for linting and formatting
+
+# Other common libraries
+# requests
+# pydantic

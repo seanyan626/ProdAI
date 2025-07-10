@@ -1,0 +1,14 @@
+This is a default prompt template.
+You can use variables like $variable_name.
+
+Current task: $task_description
+Input data: $input_data
+
+Please provide a response based on the above information.
+If context is available, use it: $context
+
+User's question: $user_question
+Assistant's persona: $assistant_persona
+
+Think step-by-step.
+Provide your answer:
