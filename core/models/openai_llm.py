@@ -1,4 +1,4 @@
-# src/llms/openai_llm.py
+# core/models/openai_llm.py
 # OpenAI LLM 接口实现 (使用 Langchain)
 import logging
 from typing import Any, Dict, List, Optional

@@ -1,5 +1,5 @@
 # tests/test_llms.py
-# 针对 src/llms/openai_llm.py 中 OpenAILLM 类的单元测试
+# 针对 core/models/openai_llm.py 中 OpenAILLM 类的单元测试
 import pytest
 import logging
 from unittest.mock import MagicMock, patch, AsyncMock
@@ -14,7 +14,7 @@ except ImportError:
     print("警告: 无法为测试导入配置/日志模块。")
 
 # 被测试的类
-from src.llms.openai_llm import OpenAILLM, _convert_dict_messages_to_langchain
+from core.models.openai_llm import OpenAILLM, _convert_dict_messages_to_langchain
 # Langchain 核心类，用于类型提示和模拟
 from langchain_core.messages import HumanMessage, AIMessage, SystemMessage, BaseMessage
 from langchain_openai import ChatOpenAI

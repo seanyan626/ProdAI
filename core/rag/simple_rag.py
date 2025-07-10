@@ -1,11 +1,11 @@
-# src/rag/simple_rag.py
+# core/rag/simple_rag.py
 # 简单的 RAG（检索增强生成）流程实现
 import logging
 from typing import List, Dict, Any, Optional
 
 from .base_retriever import BaseRetriever, Document
-from src.llms.base_llm import BaseLLM
-from src.prompts.prompt_manager import PromptManager
+from core.models.base_llm import BaseLLM
+from core.prompts.prompt_manager import PromptManager
 
 logger = logging.getLogger(__name__)
 

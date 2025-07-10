@@ -1,13 +1,13 @@
-# src/agents/specific_agent.py
+# core/agents/specific_agent.py
 # 一个更具体的 Agent 示例实现
 import logging
 import json
 from typing import Any, List, Dict, Optional, Union
 
 from .base_agent import BaseAgent, AgentAction, AgentFinish
-from src.llms.base_llm import BaseLLM
-from src.tools.base_tool import BaseTool
-from src.prompts.prompt_manager import PromptManager
+from core.models.base_llm import BaseLLM
+from core.tools.base_tool import BaseTool
+from core.prompts.prompt_manager import PromptManager
 
 logger = logging.getLogger(__name__)
 
@@ -143,9 +143,9 @@ class SpecificAgent(BaseAgent):
 if __name__ == '__main__':
     from configs.config import load_config
     from configs.logging_config import setup_logging
-    # from src.llms.openai_llm import OpenAILLM # 实际测试时需要
-    # from src.tools.search_tool import SearchTool # 实际测试时需要
-    # from src.memory.simple_memory import SimpleMemory # 实际测试时需要
+    # from core.models.openai_llm import OpenAILLM # 实际测试时需要
+    # from core.tools.search_tool import SearchTool # 实际测试时需要
+    # from core.memory.simple_memory import SimpleMemory # 实际测试时需要
     # import asyncio # 实际测试时需要
 
     load_config()

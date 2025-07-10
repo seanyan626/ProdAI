@@ -4,5 +4,5 @@
 # from .base_agent import BaseAgent
 # from .specific_agent import SpecificAgent
 
-# Or define what `from src.agents import *` imports:
+# Or define what `from core.agents import *` imports:
 # __all__ = ["BaseAgent", "SpecificAgent"]

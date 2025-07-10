@@ -4,15 +4,15 @@ import logging
 import json
 
 # 根据你的实际项目结构和配置/日志设置的位置调整导入
-# 这里假设 'configs' 和 'src' 是同级目录，或者 Python 路径已正确设置。
+# 这里假设 'configs' 和 'core' 是同级目录，或者 Python 路径已正确设置。
 try:
     from configs.config import load_config, OPENAI_API_KEY
     from configs.logging_config import setup_logging
-    from src.llms.openai_llm import OpenAILLM
-    from src.agents.specific_agent import SpecificAgent
-    from src.tools.search_tool import SearchTool
-    from src.memory.simple_memory import SimpleMemory
-    # from src.prompts.prompt_manager import PromptManager # 如果 SpecificAgent 未自动创建，则可能需要
+    from core.models.openai_llm import OpenAILLM
+    from core.agents.specific_agent import SpecificAgent
+    from core.tools.search_tool import SearchTool
+    from core.memory.simple_memory import SimpleMemory
+    # from core.prompts.prompt_manager import PromptManager # 如果 SpecificAgent 未自动创建，则可能需要
 except ImportError as e:
     print(f"错误: 无法导入必要的模块: {e}")
     print("请确保你的 PYTHONPATH 设置正确，或者从项目根目录运行此示例。")
@@ -29,7 +29,7 @@ logger = logging.getLogger("run_agent_example_脚本")
 def run_example():
     """
     运行一个初始化和使用 Agent 的简单示例。
-    用户需要先在 src/ 目录下实现相关模块的具体逻辑。
+    用户需要先在 core/ 目录下实现相关模块的具体逻辑。
     """
     logger.info("--- 开始 Agent 示例 ---")
 

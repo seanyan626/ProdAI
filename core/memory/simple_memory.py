@@ -1,4 +1,4 @@
-# src/memory/simple_memory.py
+# core/memory/simple_memory.py
 # 简单的内存记忆实现
 import logging
 from typing import Any, List, Dict, Optional, Union

@@ -4,5 +4,5 @@
 # from .base_retriever import BaseRetriever
 # from .simple_rag import SimpleRAG
 
-# Or define what `from src.rag import *` imports:
+# Or define what `from core.rag import *` imports:
 # __all__ = ["BaseRetriever", "SimpleRAG"]

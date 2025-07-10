@@ -1,14 +1,14 @@
-# src/agents/base_agent.py
+# core/agents/base_agent.py
 # Agent 的抽象基类
 import logging
 from abc import ABC, abstractmethod
 from typing import Any, List, Dict, Optional, Union
 
-from src.llms.base_llm import BaseLLM
-from src.memory.base_memory import BaseMemory
-from src.memory.simple_memory import SimpleMemory
-from src.tools.base_tool import BaseTool
-from src.prompts.prompt_manager import PromptManager
+from core.models.base_llm import BaseLLM
+from core.memory.base_memory import BaseMemory
+from core.memory.simple_memory import SimpleMemory
+from core.tools.base_tool import BaseTool
+from core.prompts.prompt_manager import PromptManager
 
 logger = logging.getLogger(__name__)
 

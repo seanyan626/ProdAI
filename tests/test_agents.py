@@ -15,12 +15,12 @@ except ImportError:
     print("警告: 无法为测试导入配置/日志模块。这可能会影响模块行为。")
 
 
-from src.agents.base_agent import BaseAgent, AgentAction, AgentFinish
-# from src.agents.specific_agent import SpecificAgent # 具体 Agent 实现待补充
-from src.llms.base_llm import BaseLLM
-from src.tools.base_tool import BaseTool, ToolInputSchema
-from src.memory.simple_memory import SimpleMemory
-from src.prompts.prompt_manager import PromptManager
+from core.agents.base_agent import BaseAgent, AgentAction, AgentFinish
+# from core.agents.specific_agent import SpecificAgent # 具体 Agent 实现待补充
+from core.models.base_llm import BaseLLM
+from core.tools.base_tool import BaseTool, ToolInputSchema
+from core.memory.simple_memory import SimpleMemory
+from core.prompts.prompt_manager import PromptManager
 
 
 logger = logging.getLogger(__name__)
@@ -83,7 +83,7 @@ def prompt_manager_with_agent_prompt(tmp_path):
 @pytest.mark.skip(reason="BaseAgent 是抽象类，SpecificAgent 实现已移除，测试待针对具体实现更新。")
 def test_base_agent_initialization(mock_llm, mock_tool_list, simple_memory):
     logger.info("测试 BaseAgent 初始化 (通过 SpecificAgent 进行概念性测试)。")
-    # from src.agents.specific_agent import SpecificAgent # 需要具体实现
+    # from core.agents.specific_agent import SpecificAgent # 需要具体实现
     # agent = SpecificAgent(llm=mock_llm, tools=mock_tool_list, memory=simple_memory)
     # assert agent.llm == mock_llm
     # assert agent.tools == mock_tool_list
@@ -99,7 +99,7 @@ def test_base_agent_initialization(mock_llm, mock_tool_list, simple_memory):
 @pytest.mark.skip(reason="SpecificAgent 实现已移除，测试待更新。")
 @pytest.fixture
 def specific_agent_components(mock_llm, mock_tool_list, simple_memory, prompt_manager_with_agent_prompt):
-    # from src.agents.specific_agent import SpecificAgent # 需要具体实现
+    # from core.agents.specific_agent import SpecificAgent # 需要具体实现
     # default_agent_prompt_name = "react_parser_agent_prompt"
     # agent_prompt_file = prompt_manager_with_agent_prompt.templates_dir / f"{default_agent_prompt_name}.txt"
     # agent_prompt_file.write_text(
@@ -117,7 +117,7 @@ def specific_agent_components(mock_llm, mock_tool_list, simple_memory, prompt_ma
 @pytest.mark.skip(reason="SpecificAgent 实现已移除，测试待更新。")
 def test_specific_agent_initialization(specific_agent_components):
     logger.info("测试 SpecificAgent 初始化。")
-    # from src.agents.specific_agent import SpecificAgent # 需要具体实现
+    # from core.agents.specific_agent import SpecificAgent # 需要具体实现
     # if not specific_agent_components: pytest.skip("组件未正确初始化，跳过测试")
     # agent = SpecificAgent(**specific_agent_components)
     # assert agent is not None
@@ -152,7 +152,7 @@ def test_specific_agent_run_one_step_and_finish(specific_agent_components, mock_
 def test_base_classes_importable():
     logger.info("测试基础 Agent 类是否可导入。")
     try:
-        from src.agents.base_agent import BaseAgent, AgentAction, AgentFinish
+        from core.agents.base_agent import BaseAgent, AgentAction, AgentFinish
         assert BaseAgent is not None
         assert AgentAction is not None
         assert AgentFinish is not None

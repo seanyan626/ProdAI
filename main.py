@@ -19,18 +19,18 @@ def main():
     例如，它可以启动一个命令行界面 (CLI)、一个 Web 服务器或一个 Agent 交互循环。
 
     注意：由于核心模块代码已被简化为骨架，以下示例代码已被注释掉。
-    用户需要先在 src/ 目录下实现相关模块的具体逻辑后才能取消注释并运行。
+    用户需要先在 core/ 目录下实现相关模块的具体逻辑后才能取消注释并运行。
     """
     logger.info(f"正在启动 {APP_NAME}...")
-    logger.info("这是一个骨架项目。请在 src/ 目录下的模块中添加您的代码实现。")
+    logger.info("这是一个骨架项目。请在 core/ 目录下的模块中添加您的代码实现。")
 
     # 示例：初始化并运行一个 Agent (实际实现将取决于你的 Agent 设置)
     # try:
-    #     # --- 以下代码块依赖于 src/ 目录下的具体实现 ---
-    #     # from src.agents.specific_agent import SpecificAgent
-    #     # from src.llms.openai_llm import OpenAILLM
-    #     # from src.tools.search_tool import SearchTool
-    #     # from src.memory.simple_memory import SimpleMemory
+    #     # --- 以下代码块依赖于 core/ 目录下的具体实现 ---
+    #     # from core.agents.specific_agent import SpecificAgent
+    #     # from core.models.openai_llm import OpenAILLM
+    #     # from core.tools.search_tool import SearchTool
+    #     # from core.memory.simple_memory import SimpleMemory
 
     #     # logger.info("尝试初始化组件...")
     #     # llm = OpenAILLM()
@@ -54,7 +54,7 @@ def main():
     #     logger.info("主要应用逻辑占位符。") # 如果没有实际Agent运行，则打印此信息
 
     # except ImportError as e:
-    #     logger.error(f"导入模块失败，请确保 src/ 目录下的模块已实现: {e}")
+    #     logger.error(f"导入模块失败，请确保 core/ 目录下的模块已实现: {e}")
     # except Exception as e:
     #     logger.error(f"应用执行期间发生错误: {e}", exc_info=True)
 
