@@ -1,9 +1,12 @@
 # Core dependencies
 python-dotenv
-openai
+openai # 保留openai库，因为langchain-openai可能仍将其作为对等依赖，或者我们可能在某些场景直接使用它
+
+# Langchain
+langchain
+langchain-openai
 
 # For RAG (example, choose your preferred libraries)
-# langchain
 # llama-index
 # faiss-cpu  # or faiss-gpu
 # sentence-transformers
