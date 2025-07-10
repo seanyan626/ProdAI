@@ -1,21 +1,22 @@
 # tests/test_agents.py
+# Agent 相关模块的测试
 import pytest
 import logging
 from unittest.mock import MagicMock, patch
 
-# Ensure config is loaded if any underlying modules need it, and logging is set up.
-# This might be better handled in a conftest.py for all tests.
+# 确保如果任何底层模块需要配置，则加载配置，并设置日志记录。
+# 这可能更适合在 conftest.py 中为所有测试统一处理。
 try:
     from configs.config import load_config
     from configs.logging_config import setup_logging
-    load_config() # Load .env variables, API keys etc.
-    setup_logging() # Configure logging for test outputs
+    load_config() # 加载 .env 变量、API 密钥等。
+    setup_logging() # 配置测试输出的日志记录
 except ImportError:
-    print("Warning: Could not import config/logging for tests. This might affect module behavior.")
+    print("警告: 无法为测试导入配置/日志模块。这可能会影响模块行为。")
 
 
 from src.agents.base_agent import BaseAgent, AgentAction, AgentFinish
-from src.agents.specific_agent import SpecificAgent # Assuming SpecificAgent is a concrete implementation
+from src.agents.specific_agent import SpecificAgent # 假设 SpecificAgent 是一个具体实现
 from src.llms.base_llm import BaseLLM
 from src.tools.base_tool import BaseTool, ToolInputSchema
 from src.memory.simple_memory import SimpleMemory
@@ -24,253 +25,256 @@ from src.prompts.prompt_manager import PromptManager
 
 logger = logging.getLogger(__name__)
 
-# --- Mocks and Fixtures ---
+# --- 模拟对象和测试固件 ---
 
 @pytest.fixture
 def mock_llm():
-    """Fixture for a mocked LLM."""
+    """模拟 LLM 的测试固件。"""
     llm = MagicMock(spec=BaseLLM)
-    llm.model_name = "mock_llm_model"
-    # Mock the generate and chat methods to return predictable responses
-    llm.generate.return_value = "Mocked LLM single generation response."
-    llm.chat.return_value = {"role": "assistant", "content": "Mocked LLM chat response."}
-    # async versions
-    async def mock_agenerate(*args, **kwargs): return "Mocked async LLM generation."
-    async def mock_achat(*args, **kwargs): return {"role": "assistant", "content": "Mocked async LLM chat."}
+    llm.model_name = "mock_llm_model_模拟LLM模型"
+    # 模拟 generate 和 chat 方法以返回可预测的响应
+    llm.generate.return_value = "模拟的LLM单次生成响应。"
+    llm.chat.return_value = {"role": "assistant", "content": "模拟的LLM聊天响应。"}
+    # 异步版本
+    async def mock_agenerate(*args, **kwargs): return "模拟的异步LLM生成。"
+    async def mock_achat(*args, **kwargs): return {"role": "assistant", "content": "模拟的异步LLM聊天。"}
     llm.agenerate = MagicMock(side_effect=mock_agenerate)
     llm.achat = MagicMock(side_effect=mock_achat)
     return llm
 
 class MockToolInput(ToolInputSchema):
-    param: str = "default"
+    param: str = "default_参数" # 模拟工具输入参数
 
 class MockTool(BaseTool):
-    name: str = "mock_tool"
-    description: str = "A mock tool for testing."
+    name: str = "mock_tool_模拟工具"
+    description: str = "用于测试的模拟工具。"
     args_schema = MockToolInput
 
-    def _run(self, param: str = "default") -> str:
-        return f"MockTool executed with param: {param}"
+    def _run(self, param: str = "default_参数") -> str:
+        return f"模拟工具已执行，参数: {param}"
 
-    async def _arun(self, param: str = "default") -> str:
-        return f"Async MockTool executed with param: {param}"
+    async def _arun(self, param: str = "default_参数") -> str:
+        return f"异步模拟工具已执行，参数: {param}"
 
 @pytest.fixture
 def mock_tool_list():
-    """Fixture for a list containing a mock tool."""
+    """包含一个模拟工具的列表的测试固件。"""
     return [MockTool()]
 
 @pytest.fixture
 def simple_memory():
-    """Fixture for a SimpleMemory instance."""
+    """SimpleMemory 实例的测试固件。"""
     return SimpleMemory()
 
 @pytest.fixture
 def prompt_manager_with_agent_prompt(tmp_path):
-    """Fixture for a PromptManager with a dummy agent prompt."""
-    templates_dir = tmp_path / "agent_templates"
+    """带有虚拟 Agent 提示的 PromptManager 的测试固件。"""
+    templates_dir = tmp_path / "agent_templates_agent模板"
     templates_dir.mkdir()
-    agent_prompt_file = templates_dir / "test_agent_prompt.txt"
-    agent_prompt_file.write_text("User: $input\nTools: $tool_descriptions\nScratchpad: $scratchpad\nThought:")
+    agent_prompt_file = templates_dir / "test_agent_prompt.txt" # 测试agent提示文件
+    agent_prompt_file.write_text("用户: $input\n工具: $tool_descriptions\n暂存区: $scratchpad\n思考:")
 
     pm = PromptManager(templates_dir=str(templates_dir))
     return pm
 
 
-# --- Test BaseAgent (Conceptual - requires a concrete class or more mocking) ---
+# --- 测试 BaseAgent (概念性 - 需要具体类或更多模拟) ---
 
 def test_base_agent_initialization(mock_llm, mock_tool_list, simple_memory):
-    logger.info("Testing BaseAgent initialization (conceptual via SpecificAgent).")
-    # BaseAgent is abstract, so we might test its initialization via a concrete subclass
-    # or by creating a dummy concrete class for testing. Here, using SpecificAgent.
+    logger.info("测试 BaseAgent 初始化 (通过 SpecificAgent 进行概念性测试)。")
+    # BaseAgent 是抽象的，因此我们可能通过具体子类测试其初始化，
+    # 或创建一个用于测试的虚拟具体类。这里使用 SpecificAgent。
     try:
         agent = SpecificAgent(llm=mock_llm, tools=mock_tool_list, memory=simple_memory)
         assert agent.llm == mock_llm
         assert agent.tools == mock_tool_list
         assert agent.memory == simple_memory
-        assert agent.tool_map["mock_tool"] is not None
+        assert agent.tool_map["mock_tool_模拟工具"] is not None # 检查模拟工具是否在映射中
     except Exception as e:
-        pytest.fail(f"Agent initialization failed: {e}")
+        pytest.fail(f"Agent 初始化失败: {e}")
 
 
-# --- Test SpecificAgent (Example concrete agent) ---
+# --- 测试 SpecificAgent (具体 Agent 示例) ---
 
 @pytest.fixture
 def specific_agent_components(mock_llm, mock_tool_list, simple_memory, prompt_manager_with_agent_prompt):
-    # Use the prompt manager that has the test_agent_prompt defined
-    # And tell SpecificAgent to use that prompt name.
-    # SpecificAgent's default prompt name is 'react_parser_agent_prompt'.
-    # For this test, we'll use a custom one to ensure it's loaded from our fixture.
-    # Or, we can mock SpecificAgent's default prompt name to match our test file.
+    # 使用定义了 test_agent_prompt 的提示管理器，
+    # 并告诉 SpecificAgent 使用该提示名称。
+    # SpecificAgent 的默认提示名称是 'react_parser_agent_prompt'。
+    # 对于此测试，我们将使用自定义名称以确保从我们的固件加载。
+    # 或者，我们可以模拟 SpecificAgent 的默认提示名称以匹配我们的测试文件。
 
-    # Easiest: ensure the prompt manager has the SpecificAgent's default prompt
-    default_agent_prompt_name = "react_parser_agent_prompt" # Default for SpecificAgent
+    # 最简单的方法：确保提示管理器具有 SpecificAgent 的默认提示
+    default_agent_prompt_name = "react_parser_agent_prompt" # SpecificAgent 的默认值
     agent_prompt_file = prompt_manager_with_agent_prompt.templates_dir / f"{default_agent_prompt_name}.txt"
     agent_prompt_file.write_text(
-        "Tools: $tool_descriptions\nInput: $input\nScratchpad: $scratchpad\nThought:"
+        "工具: $tool_descriptions\n输入: $input\n暂存区: $scratchpad\n思考:" # 简化的提示内容
     )
-    # Re-initialize prompt manager to pick up the new file (or ensure it's loaded if PM loads dynamically)
-    # A bit hacky; better if PM had a reload or add_template method.
-    # For simplicity, assume PromptManager loads all on init.
+    # 重新初始化提示管理器以拾取新文件 (或确保在 PM 动态加载时已加载)
+    # 有点取巧；如果 PM 有 reload 或 add_template 方法会更好。
+    # 为简单起见，假设 PromptManager 在初始化时加载所有内容。
     reloaded_pm = PromptManager(templates_dir=prompt_manager_with_agent_prompt.templates_dir)
 
     return {
         "llm": mock_llm,
         "tools": mock_tool_list,
         "memory": simple_memory,
-        "prompt_manager": reloaded_pm # Use the one with the prompt
+        "prompt_manager": reloaded_pm # 使用带有提示的那个
     }
 
 def test_specific_agent_initialization(specific_agent_components):
-    logger.info("Testing SpecificAgent initialization.")
+    logger.info("测试 SpecificAgent 初始化。")
     try:
         agent = SpecificAgent(**specific_agent_components)
         assert agent is not None
-        assert agent.agent_prompt_name == "react_parser_agent_prompt" # Default
+        assert agent.agent_prompt_name == "react_parser_agent_prompt" # 默认值
         assert agent.prompt_manager.get_template(agent.agent_prompt_name) is not None
     except Exception as e:
-        pytest.fail(f"SpecificAgent initialization failed: {e}")
+        pytest.fail(f"SpecificAgent 初始化失败: {e}")
 
 
 def test_specific_agent_plan_parses_final_answer(specific_agent_components):
-    logger.info("Testing SpecificAgent _plan method for Final Answer parsing.")
+    logger.info("测试 SpecificAgent _plan 方法的 Final Answer 解析。")
     agent = SpecificAgent(**specific_agent_components)
 
-    # Mock LLM to return a response that should be parsed as AgentFinish
-    mock_llm_output = "Thought: I have enough information.\nFinal Answer: The result is 42."
-    agent.llm.chat.return_value = {"role": "assistant", "content": mock_llm_output} # if it uses chat
-    agent.llm.generate.return_value = mock_llm_output # if it uses generate
+    # 模拟 LLM 返回应解析为 AgentFinish 的响应
+    mock_llm_output = "Thought: 我有足够的信息了。\nFinal Answer: 结果是 42。" # 中文思考和答案
+    agent.llm.chat.return_value = {"role": "assistant", "content": mock_llm_output} # 如果使用 chat
+    agent.llm.generate.return_value = mock_llm_output # 如果使用 generate
 
-    inputs = {"input": "What is the meaning of life?"}
+    inputs = {"input": "生命的意义是什么？"}
     intermediate_steps = []
 
     decision = agent._plan(inputs, intermediate_steps)
 
     assert isinstance(decision, AgentFinish)
-    assert decision.output == {"answer": "The result is 42."}
-    assert "I have enough information" in decision.log
+    assert decision.output == {"answer": "结果是 42。"}
+    assert "我有足够的信息了" in decision.log
 
 
 def test_specific_agent_plan_parses_action(specific_agent_components):
-    logger.info("Testing SpecificAgent _plan method for AgentAction parsing.")
+    logger.info("测试 SpecificAgent _plan 方法的 AgentAction 解析。")
     agent = SpecificAgent(**specific_agent_components)
 
-    # Mock LLM to return a response for an action
-    mock_llm_output = 'Thought: I need to use the mock tool.\nAction: mock_tool\nAction Input: {"param": "test_value"}'
+    # 模拟 LLM 返回一个行动响应
+    mock_llm_output = 'Thought: 我需要使用模拟工具。\nAction: mock_tool_模拟工具\nAction Input: {"param": "测试值"}' # 中文思考和参数值
     agent.llm.chat.return_value = {"role": "assistant", "content": mock_llm_output}
     agent.llm.generate.return_value = mock_llm_output
 
-    inputs = {"input": "Use the mock tool."}
+    inputs = {"input": "使用模拟工具。"}
     intermediate_steps = []
 
     decision = agent._plan(inputs, intermediate_steps)
 
     assert isinstance(decision, AgentAction)
-    assert decision.tool_name == "mock_tool"
-    assert decision.tool_input == {"param": "test_value"}
-    assert "I need to use the mock tool" in decision.log
+    assert decision.tool_name == "mock_tool_模拟工具"
+    assert decision.tool_input == {"param": "测试值"}
+    assert "我需要使用模拟工具" in decision.log
 
 
 def test_specific_agent_plan_handles_malformed_json_input(specific_agent_components):
-    logger.info("Testing SpecificAgent _plan with malformed JSON in Action Input.")
+    logger.info("测试 SpecificAgent _plan 处理 Action Input 中格式错误的 JSON。")
     agent = SpecificAgent(**specific_agent_components)
 
-    # LLM returns an action with malformed JSON
-    mock_llm_output = 'Thought: Trying an action.\nAction: mock_tool\nAction Input: {"param": "test_value",,}' # Extra comma
+    # LLM 返回一个带有格式错误 JSON 的行动
+    mock_llm_output = 'Thought: 正在尝试一个行动。\nAction: mock_tool_模拟工具\nAction Input: {"param": "测试值",,}' # 多余的逗号
     agent.llm.chat.return_value = {"role": "assistant", "content": mock_llm_output}
     agent.llm.generate.return_value = mock_llm_output
 
-    inputs = {"input": "Test malformed JSON."}
+    inputs = {"input": "测试格式错误的 JSON。"}
     intermediate_steps = []
     decision = agent._plan(inputs, intermediate_steps)
 
-    assert isinstance(decision, AgentFinish) # Should finish with an error
+    assert isinstance(decision, AgentFinish) # 应以错误结束
     assert "error" in decision.output
-    assert "invalid JSON" in decision.output["error"].lower()
+    assert "invalid json" in decision.output["error"].lower() # 检查英文 "invalid json" 因为那是Python json库的错误信息
 
 
 def test_specific_agent_run_one_step_and_finish(specific_agent_components, mock_tool_list):
-    logger.info("Testing SpecificAgent run method for one tool call then finish.")
-    agent = SpecificAgent(**specific_agent_components) # uses mocked LLM and Tool
+    logger.info("测试 SpecificAgent run 方法进行一次工具调用然后完成。")
+    agent = SpecificAgent(**specific_agent_components) # 使用模拟的 LLM 和工具
 
-    # --- Setup LLM mock to guide the agent ---
-    # 1. First LLM call (planning): Agent decides to use mock_tool
-    llm_response_action = 'Thought: I should use mock_tool.\nAction: mock_tool\nAction Input: {"param": "run_test"}'
+    # --- 设置 LLM 模拟以引导 Agent ---
+    # 1. 第一次 LLM 调用 (规划): Agent 决定使用 mock_tool
+    llm_response_action = 'Thought: 我应该使用 mock_tool_模拟工具。\nAction: mock_tool_模拟工具\nAction Input: {"param": "运行测试"}'
 
-    # 2. Second LLM call (after tool observation): Agent decides to finish
-    # The observation from mock_tool will be "MockTool executed with param: run_test"
-    # This observation will be part of the scratchpad for the second LLM call.
-    llm_response_finish = "Thought: I have the tool's result, now I can answer.\nFinal Answer: The mock tool said: MockTool executed with param: run_test"
+    # 2. 第二次 LLM 调用 (工具观察后): Agent 决定完成
+    # mock_tool 的观察结果将是 "模拟工具已执行，参数: 运行测试"
+    # 此观察结果将成为第二次 LLM 调用的暂存区的一部分。
+    llm_response_finish = "Thought: 我已获得工具的结果，现在可以回答了。\nFinal Answer: 模拟工具说：模拟工具已执行，参数: 运行测试"
 
-    # Configure the mock LLM to return these responses sequentially
+    # 配置模拟 LLM 以按顺序返回这些响应
     agent.llm.chat.side_effect = [
         {"role": "assistant", "content": llm_response_action},
         {"role": "assistant", "content": llm_response_finish}
     ]
-    agent.llm.generate.side_effect = [ # if agent uses generate
+    agent.llm.generate.side_effect = [ # 如果 agent 使用 generate
         llm_response_action,
         llm_response_finish
     ]
 
-    # --- Run the agent ---
-    initial_query = "Run the mock tool and tell me what it says."
+    # --- 运行 Agent ---
+    initial_query = "运行模拟工具并告诉我它说了什么。"
     final_result = agent.run(initial_query)
 
-    # --- Assertions ---
-    assert "answer" in final_result, f"Agent did not provide an answer. Result: {final_result}"
-    assert "MockTool executed with param: run_test" in final_result["answer"]
+    # --- 断言 ---
+    assert "answer" in final_result, f"Agent 未提供答案。结果: {final_result}"
+    assert "模拟工具已执行，参数: 运行测试" in final_result["answer"]
 
-    # Check if the LLM was called twice (once for action, once for finish)
-    # This depends on whether the agent uses chat or generate.
+    # 检查 LLM 是否被调用了两次 (一次用于行动，一次用于完成)
+    # 这取决于 Agent 是使用 chat 还是 generate。
     if hasattr(agent.llm, 'chat') and agent.llm.chat.called:
         assert agent.llm.chat.call_count == 2
     elif hasattr(agent.llm, 'generate') and agent.llm.generate.called:
         assert agent.llm.generate.call_count == 2
 
-    # Check if the mock tool was called once
-    # We need a way to assert this. If the tool is a MagicMock, we can check call_count.
-    # Here, MockTool is a real class. We could patch its _run method.
+    # 检查模拟工具是否被调用了一次
+    # 我们需要一种方法来断言这一点。如果工具是 MagicMock，我们可以检查 call_count。
+    # 在这里，MockTool 是一个真实的类。我们可以 patch 其 _run 方法。
     with patch.object(MockTool, '_run', wraps=mock_tool_list[0]._run) as patched_tool_run:
-        # Re-run with the patched tool if necessary, or ensure the previous run used this instance.
-        # For simplicity, assume the previous run did use it.
-        # This assertion needs the tool instance used by the agent.
-        # The agent creates its own tool_map.
-        # A better way: pass a MagicMock tool into the agent for this test.
+        # 如有必要，使用 patch 后的工具重新运行，或确保先前的运行使用了此实例。
+        # 为简单起见，假设先前的运行确实使用了它。
+        # 此断言需要 Agent 使用的工具实例。
+        # Agent 创建自己的 tool_map。
+        # 更好的方法：为此测试将 MagicMock 工具传递给 Agent。
 
-        # Let's re-run with a MagicMock tool for clearer assertion
+        # 让我们使用 MagicMock 工具重新运行以获得更清晰的断言
         magic_mock_tool = MagicMock(spec=MockTool)
-        magic_mock_tool.name = "mock_tool"
-        magic_mock_tool.description = "A mock tool."
+        magic_mock_tool.name = "mock_tool_模拟工具" # 确保名称匹配
+        magic_mock_tool.description = "一个模拟工具。"
         magic_mock_tool.args_schema = MockToolInput
-        magic_mock_tool.run.return_value = "MagicMockTool executed with param: run_test"
+        magic_mock_tool.run.return_value = "MagicMock工具已执行，参数: 运行测试"
 
-        # Create a new agent instance with this MagicMock tool
+        # 使用此 MagicMock 工具创建新的 Agent 实例
         agent_with_magic_tool_components = specific_agent_components.copy()
         agent_with_magic_tool_components["tools"] = [magic_mock_tool]
         agent_with_magic_tool = SpecificAgent(**agent_with_magic_tool_components)
 
-        # Reset LLM call counts for the new agent
+        # 为新 Agent 重置 LLM 调用计数
         agent_with_magic_tool.llm.chat.reset_mock()
         agent_with_magic_tool.llm.generate.reset_mock()
+        # 更新模拟LLM的响应内容，以匹配新的模拟工具名称和输出
+        llm_response_action_magic = f'Thought: 我应该使用 {magic_mock_tool.name}。\nAction: {magic_mock_tool.name}\nAction Input: {{"param": "运行测试"}}'
+        llm_response_finish_magic = f"Thought: 好的。\nFinal Answer: MagicMock工具说：MagicMock工具已执行，参数: 运行测试"
+
         agent_with_magic_tool.llm.chat.side_effect = [
-            {"role": "assistant", "content": llm_response_action},
-            {"role": "assistant", "content": "Thought: OK.\nFinal Answer: The magic mock tool said: MagicMockTool executed with param: run_test"}
+            {"role": "assistant", "content": llm_response_action_magic},
+            {"role": "assistant", "content": llm_response_finish_magic}
         ]
         agent_with_magic_tool.llm.generate.side_effect = [
-             llm_response_action,
-             "Thought: OK.\nFinal Answer: The magic mock tool said: MagicMockTool executed with param: run_test"
+             llm_response_action_magic,
+             llm_response_finish_magic
         ]
-
 
         final_result_magic_tool = agent_with_magic_tool.run(initial_query)
 
-        magic_mock_tool.run.assert_called_once_with({"param": "run_test"})
-        assert "MagicMockTool executed" in final_result_magic_tool["answer"]
+        magic_mock_tool.run.assert_called_once_with({"param": "运行测试"})
+        assert "MagicMock工具已执行" in final_result_magic_tool["answer"]
 
 
-# TODO: Add tests for async agent execution (_aplan, arun)
-# TODO: Add tests for max_iterations limit
-# TODO: Add tests for specific parsing edge cases in _parse_llm_output
-# TODO: Add tests for tool not found scenarios
+# TODO: 添加异步 Agent 执行的测试 (_aplan, arun)
+# TODO: 添加最大迭代次数限制的测试
+# TODO: 添加 _parse_llm_output 中特定解析边缘情况的测试
+# TODO: 添加工具未找到场景的测试
 
-logger.info("Agent tests completed (basic structure).")
+logger.info("Agent 测试完成 (基本结构)。")

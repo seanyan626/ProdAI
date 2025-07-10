@@ -1,57 +1,57 @@
-## Agent Instructions for `aiproject`
+## `aiproject` 的 Agent 指南
 
-This file provides special instructions for AI agents working with this codebase.
+本文档为处理此代码库的 AI Agent 提供特殊说明。
 
-### Project Overview
+### 项目概述
 
-`aiproject` is a Python-based framework for building AI applications leveraging Large Language Models (LLMs). It features a modular architecture with components for agents, LLM interaction, memory, prompt management, RAG (Retrieval Augmented Generation), and tools.
+`aiproject` 是一个基于 Python 的框架，用于构建利用大语言模型 (LLM) 的 AI 应用。它具有模块化架构，包含用于 Agent、LLM 交互、记忆、提示管理、RAG (检索增强生成) 和工具的组件。
 
-### Key Architectural Principles
+### 关键架构原则
 
-*   **Modularity**: Each core functionality (agents, llms, memory, etc.) resides in its own directory under `src/`. Aim to keep these modules self-contained.
-*   **High Cohesion, Low Coupling**: Classes and functions within a module should be closely related. Dependencies between modules should be minimized and managed through well-defined interfaces (e.g., base classes).
-*   **Configuration Management**: All configurations, including API keys and model parameters, should be managed via environment variables (loaded from a `.env` file, based on `.env.example`) and accessed through the `configs` module. Do not hardcode sensitive information or configurable parameters directly in the code.
-*   **Extensibility**: The system is designed to be extensible. When adding new LLMs, agent types, memory systems, or tools, prefer creating new classes that inherit from the provided base classes in each module.
+*   **模块化**: 每个核心功能 (Agent、LLM、记忆等) 都位于 `src/` 下的独立目录中。目标是保持这些模块的自包含性。
+*   **高内聚、低耦合**: 模块内的类和函数应紧密相关。模块之间的依赖关系应最小化，并通过定义良好的接口 (例如基类) 进行管理。
+*   **配置管理**: 所有配置，包括 API 密钥和模型参数，都应通过环境变量 (从 `.env` 文件加载，基于 `.env.example`) 进行管理，并通过 `configs` 模块访问。不要在代码中硬编码敏感信息或可配置参数。
+*   **可扩展性**: 系统设计为可扩展的。在添加新的 LLM、Agent 类型、记忆系统或工具时，优先创建继承自各模块中提供的基类的新类。
 
-### Working with Modules
+### 使用模块
 
 *   **`src/agents`**:
-    *   New agent types should inherit from `BaseAgent`.
-    *   Agents should primarily interact with other system components (LLMs, tools, memory) through their respective abstractions.
+    *   新的 Agent 类型应继承自 `BaseAgent`。
+    *   Agent 应主要通过其各自的抽象与其他系统组件 (LLM、工具、记忆) 交互。
 *   **`src/llms`**:
-    *   New LLM integrations should inherit from `BaseLLM`.
-    *   Focus on abstracting the specific API calls of the LLM provider.
+    *   新的 LLM 集成应继承自 `BaseLLM`。
+    *   专注于抽象 LLM 提供程序的特定 API 调用。
 *   **`src/memory`**:
-    *   New memory systems should inherit from `BaseMemory`.
+    *   新的记忆系统应继承自 `BaseMemory`。
 *   **`src/prompts`**:
-    *   Use the `PromptManager` for loading and formatting prompts.
-    *   Store prompt templates in the `src/prompts/templates/` directory.
+    *   使用 `PromptManager` 加载和格式化提示。
+    *   将提示模板存储在 `src/prompts/templates/` 目录中。
 *   **`src/rag`**:
-    *   Components like retrievers and document loaders should be designed to be swappable.
+    *   检索器和文档加载器等组件应设计为可替换的。
 *   **`src/tools`**:
-    *   New tools should inherit from `BaseTool`.
-    *   Tools should be self-contained and have a clear `execute` method.
+    *   新工具应继承自 `BaseTool`。
+    *   工具应自包含并具有清晰的 `execute` 方法。
 
-### Testing
+### 测试
 
-*   All new features or bug fixes should be accompanied by relevant unit tests in the `tests/` directory.
-*   Maintain a similar directory structure in `tests/` as in `src/`.
-*   Run tests frequently to ensure code quality. (Command to run tests will be specified once a test runner is set up, e.g., `pytest`).
+*   所有新功能或错误修复都应在 `tests/` 目录中附带相关的单元测试。
+*   在 `tests/` 中保持与 `src/` 相似的目录结构。
+*   经常运行测试以确保代码质量。(运行测试的命令将在设置测试运行器后指定，例如 `pytest`)。
 
-### Code Style and Conventions
+### 代码风格和约定
 
-*   Follow PEP 8 Python style guidelines.
-*   Use type hinting for all function signatures and variable declarations.
-*   Write clear and concise docstrings for all modules, classes, and functions.
+*   遵循 PEP 8 Python 风格指南。
+*   对所有函数签名和变量声明使用类型提示。
+*   为所有模块、类和函数编写清晰简洁的文档字符串。
 
-### Committing Changes
+### 提交更改
 
-*   Write clear and descriptive commit messages.
-*   Ensure all tests pass before committing.
+*   编写清晰且描述性的提交消息。
+*   在提交之前确保所有测试都通过。
 
-### Environment Setup
+### 环境设置
 
-1.  Copy `.env.example` to `.env`.
-2.  Fill in the necessary API keys and configurations in the `.env` file.
+1.  将 `.env.example` 复制为 `.env`。
+2.  在 `.env` 文件中填写必要的 API 密钥和配置。
 
-By following these guidelines, you will help maintain the quality, consistency, and maintainability of the `aiproject` codebase.
+通过遵循这些指南，你将有助于保持 `aiproject` 代码库的质量、一致性和可维护性。

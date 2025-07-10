@@ -1,14 +1,14 @@
-This is a default prompt template.
-You can use variables like $variable_name.
+这是一个默认的提示模板。
+你可以使用像 $variable_name 这样的变量。
 
-Current task: $task_description
-Input data: $input_data
+当前任务: $task_description
+输入数据: $input_data
 
-Please provide a response based on the above information.
-If context is available, use it: $context
+请根据以上信息提供回复。
+如果上下文可用，请使用它: $context
 
-User's question: $user_question
-Assistant's persona: $assistant_persona
+用户的问题: $user_question
+助手的角色设定: $assistant_persona
 
-Think step-by-step.
-Provide your answer:
+请逐步思考。
+提供你的答案:

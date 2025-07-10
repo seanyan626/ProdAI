@@ -1,143 +1,144 @@
 # src/prompts/prompt_manager.py
+# 提示管理器模块
 import logging
 import os
 from typing import Dict, Any, Optional, List
-from string import Template # Using string.Template for simple variable substitution
+from string import Template # 使用 string.Template 进行简单的变量替换
 
-# Assuming your project structure is aiproject/src/prompts/templates
-# and this file is aiproject/src/prompts/prompt_manager.py
-DEFAULT_TEMPLATES_DIR = os.path.join(os.path.dirname(__file__), "templates")
+# 假设你的项目结构是 aiproject/src/prompts/templates
+# 并且此文件是 aiproject/src/prompts/prompt_manager.py
+DEFAULT_TEMPLATES_DIR = os.path.join(os.path.dirname(__file__), "templates") # 默认模板目录
 
 logger = logging.getLogger(__name__)
 
 class PromptTemplate(Template):
     """
-    Custom Template class to allow for different delimiter if needed,
-    and to potentially add more complex template logic in the future.
-    For now, it's a direct subclass of string.Template.
+    自定义模板类，如果需要，可以允许使用不同的分隔符，
+    并且将来可能添加更复杂的模板逻辑。
+    目前，它是 string.Template 的直接子类。
     """
-    # delimiter = "$" # Default delimiter, can be changed if necessary
+    # delimiter = "$" # 默认分隔符，必要时可以更改
     pass
 
 
 class PromptManager:
     """
-    Manages loading, formatting, and accessing prompt templates.
+    管理提示模板的加载、格式化和访问。
     """
 
     def __init__(self, templates_dir: Optional[str] = None):
         """
-        Initializes the PromptManager.
+        初始化 PromptManager。
 
-        Args:
-            templates_dir (Optional[str]): The directory where prompt template files are stored.
-                                           Defaults to "templates" subdirectory next to this file.
+        参数:
+            templates_dir (Optional[str]): 存储提示模板文件的目录。
+                                           默认为此文件旁边的 "templates" 子目录。
         """
         self.templates_dir = templates_dir or DEFAULT_TEMPLATES_DIR
-        self.loaded_templates: Dict[str, PromptTemplate] = {}
+        self.loaded_templates: Dict[str, PromptTemplate] = {} # 已加载的模板
         self._load_all_templates()
-        logger.info(f"PromptManager initialized. Loaded templates from: {self.templates_dir}")
+        logger.info(f"PromptManager 已初始化。已从以下位置加载模板: {self.templates_dir}")
 
     def _load_template_file(self, file_path: str) -> Optional[str]:
-        """Loads a single template file."""
+        """加载单个模板文件。"""
         try:
             with open(file_path, 'r', encoding='utf-8') as f:
                 content = f.read()
             return content
         except FileNotFoundError:
-            logger.error(f"Template file not found: {file_path}")
+            logger.error(f"模板文件未找到: {file_path}")
             return None
         except Exception as e:
-            logger.error(f"Error loading template file {file_path}: {e}", exc_info=True)
+            logger.error(f"加载模板文件 {file_path} 出错: {e}", exc_info=True)
             return None
 
     def _load_all_templates(self) -> None:
         """
-        Loads all .txt or .prompt files from the templates directory.
-        The filename (without extension) is used as the template name.
+        从模板目录加载所有 .txt 或 .prompt 文件。
+        文件名 (不带扩展名) 用作模板名称。
         """
         if not os.path.isdir(self.templates_dir):
-            logger.warning(f"Templates directory not found: {self.templates_dir}. No templates loaded.")
+            logger.warning(f"模板目录未找到: {self.templates_dir}。未加载任何模板。")
             return
 
         for filename in os.listdir(self.templates_dir):
-            if filename.endswith((".txt", ".prompt")):
-                template_name = os.path.splitext(filename)[0]
+            if filename.endswith((".txt", ".prompt")): # 支持的模板文件扩展名
+                template_name = os.path.splitext(filename)[0] # 使用文件名作为模板名
                 file_path = os.path.join(self.templates_dir, filename)
                 content = self._load_template_file(file_path)
                 if content:
                     self.loaded_templates[template_name] = PromptTemplate(content)
-                    logger.debug(f"Loaded template: '{template_name}' from {filename}")
-        logger.info(f"Loaded {len(self.loaded_templates)} templates.")
+                    logger.debug(f"已加载模板: '{template_name}' (来自 {filename})")
+        logger.info(f"已加载 {len(self.loaded_templates)} 个模板。")
 
 
     def get_template(self, template_name: str) -> Optional[PromptTemplate]:
         """
-        Retrieves a loaded prompt template.
+        检索已加载的提示模板。
 
-        Args:
-            template_name (str): The name of the template (filename without extension).
+        参数:
+            template_name (str): 模板的名称 (不带扩展名的文件名)。
 
-        Returns:
-            Optional[PromptTemplate]: The PromptTemplate object, or None if not found.
+        返回:
+            Optional[PromptTemplate]: PromptTemplate 对象，如果未找到则为 None。
         """
         template = self.loaded_templates.get(template_name)
         if not template:
-            logger.warning(f"Template '{template_name}' not found.")
+            logger.warning(f"模板 '{template_name}' 未找到。")
         return template
 
     def format_prompt(self, template_name: str, **kwargs: Any) -> Optional[str]:
         """
-        Formats a prompt using a named template and provided keyword arguments.
+        使用命名模板和提供的关键字参数格式化提示。
 
-        Args:
-            template_name (str): The name of the template to use.
-            **kwargs: The variables to substitute into the template.
+        参数:
+            template_name (str): 要使用的模板的名称。
+            **kwargs: 要替换到模板中的变量。
 
-        Returns:
-            Optional[str]: The formatted prompt string, or None if the template is not found
-                           or if there's an error during formatting.
+        返回:
+            Optional[str]: 格式化的提示字符串，如果找不到模板或格式化过程中出错，则为 None。
         """
         template = self.get_template(template_name)
         if not template:
             return None
 
         try:
-            # Using safe_substitute to avoid KeyError if some placeholders are missing
-            # and to allow for $ signs not intended for substitution.
-            # If strict substitution is needed, use substitute().
+            # 使用 safe_substitute 以避免在某些占位符丢失时出现 KeyError，
+            # 并允许非用于替换的 $ 符号。
+            # 如果需要严格替换，请使用 substitute()。
             formatted_prompt = template.safe_substitute(**kwargs)
-            logger.debug(f"Formatted prompt '{template_name}' with variables: {kwargs}")
+            logger.debug(f"已使用变量 {kwargs} 格式化提示 '{template_name}'。")
             return formatted_prompt
         except KeyError as e:
-            logger.error(f"Missing variable for template '{template_name}': {e}. Variables provided: {kwargs}")
+            logger.error(f"模板 '{template_name}' 缺少变量: {e}。提供的变量: {kwargs}")
             return None
         except Exception as e:
-            logger.error(f"Error formatting template '{template_name}': {e}", exc_info=True)
+            logger.error(f"格式化模板 '{template_name}' 出错: {e}", exc_info=True)
             return None
 
     def list_available_templates(self) -> List[str]:
         """
-        Returns a list of names of all loaded templates.
+        返回所有已加载模板的名称列表。
         """
         return list(self.loaded_templates.keys())
 
-# --- Example: Create a dummy template file for testing ---
+# --- 示例: 创建用于测试的虚拟模板文件 ---
 def _create_dummy_template_files(templates_dir: str):
+    """为测试创建虚拟模板文件。"""
     if not os.path.exists(templates_dir):
         os.makedirs(templates_dir)
 
-    # Template 1: simple_greeting.txt
+    # 模板 1: simple_greeting.txt (简单问候)
     with open(os.path.join(templates_dir, "simple_greeting.txt"), "w", encoding="utf-8") as f:
-        f.write("Hello, $name! Welcome to $platform.")
+        f.write("你好，$name！欢迎来到 $platform。")
 
-    # Template 2: question_template.prompt
+    # 模板 2: question_template.prompt (问题模板)
     with open(os.path.join(templates_dir, "question_template.prompt"), "w", encoding="utf-8") as f:
-        f.write("User query: $query\nContext: $context\n\nPlease answer the query based on the context.")
+        f.write("用户查询: $query\n上下文: $context\n\n请根据上下文回答查询。")
 
-    # Template 3: with_missing_var_test.txt (for safe_substitute testing)
+    # 模板 3: escape_test.txt (用于 safe_substitute 测试的模板)
     with open(os.path.join(templates_dir, "escape_test.txt"), "w", encoding="utf-8") as f:
-        f.write("This template costs $$10. Your variable is $var.")
+        f.write("此模板花费 $$10。你的变量是 $var。")
 
 
 if __name__ == '__main__':
@@ -146,54 +147,54 @@ if __name__ == '__main__':
     load_config()
     setup_logging()
 
-    logger.info("Testing PromptManager...")
+    logger.info("正在测试 PromptManager...")
 
-    # Create dummy templates for the test
-    test_templates_path = os.path.join(os.path.dirname(__file__), "test_prompt_templates")
+    # 为测试创建虚拟模板
+    test_templates_path = os.path.join(os.path.dirname(__file__), "test_prompt_templates_示例") # 测试模板目录
     _create_dummy_template_files(test_templates_path)
 
     manager = PromptManager(templates_dir=test_templates_path)
 
-    logger.info(f"Available templates: {manager.list_available_templates()}")
+    logger.info(f"可用模板: {manager.list_available_templates()}")
     assert "simple_greeting" in manager.list_available_templates()
     assert "question_template" in manager.list_available_templates()
 
-    # Test formatting a valid prompt
-    greeting = manager.format_prompt("simple_greeting", name="Alice", platform="AI World")
-    logger.info(f"Formatted 'simple_greeting': {greeting}")
-    assert greeting == "Hello, Alice! Welcome to AI World."
+    # 测试格式化有效提示
+    greeting = manager.format_prompt("simple_greeting", name="爱丽丝", platform="AI 世界")
+    logger.info(f"格式化的 'simple_greeting': {greeting}")
+    assert greeting == "你好，爱丽丝！欢迎来到 AI 世界。"
 
-    # Test formatting another valid prompt
+    # 测试格式化另一个有效提示
     question = manager.format_prompt(
         "question_template",
-        query="What is the capital of France?",
-        context="France is a country in Europe. Its capital is Paris."
+        query="法国的首都是哪里？",
+        context="法国是欧洲的一个国家。其首都是巴黎。"
     )
-    logger.info(f"Formatted 'question_template': {question}")
-    assert "User query: What is the capital of France?" in question
-    assert "Context: France is a country in Europe. Its capital is Paris." in question
+    logger.info(f"格式化的 'question_template': {question}")
+    assert "用户查询: 法国的首都是哪里？" in question
+    assert "上下文: 法国是欧洲的一个国家。其首都是巴黎。" in question
 
-    # Test formatting with missing variables (using safe_substitute)
-    escaped_prompt = manager.format_prompt("escape_test", var="test_value")
-    logger.info(f"Formatted 'escape_test': {escaped_prompt}")
-    assert escaped_prompt == "This template costs $10. Your variable is test_value."
+    # 测试使用 safe_substitute 格式化带缺失变量的模板
+    escaped_prompt = manager.format_prompt("escape_test", var="测试值")
+    logger.info(f"格式化的 'escape_test': {escaped_prompt}")
+    assert escaped_prompt == "此模板花费 $10。你的变量是 测试值。" # `$$` 会转义为 `$`
 
-    # Test formatting with all variables missing for a template
+    # 测试格式化模板时所有变量均缺失的情况
     missing_vars_prompt = manager.format_prompt("simple_greeting")
-    logger.info(f"Formatted 'simple_greeting' with no vars: {missing_vars_prompt}")
-    assert missing_vars_prompt == "Hello, $name! Welcome to $platform."
+    logger.info(f"格式化的 'simple_greeting' (无变量): {missing_vars_prompt}")
+    assert missing_vars_prompt == "你好，$name！欢迎来到 $platform。"
 
 
-    # Test getting a non-existent template
-    non_existent = manager.format_prompt("non_existent_template", key="value")
+    # 测试获取不存在的模板
+    non_existent = manager.format_prompt("non_existent_template_不存在的模板", key="值")
     assert non_existent is None
 
-    # Clean up dummy templates
+    # 清理虚拟模板
     import shutil
     try:
         shutil.rmtree(test_templates_path)
-        logger.info(f"Cleaned up test templates directory: {test_templates_path}")
+        logger.info(f"已清理测试模板目录: {test_templates_path}")
     except Exception as e:
-        logger.error(f"Error cleaning up test templates: {e}")
+        logger.error(f"清理测试模板出错: {e}")
 
-    logger.info("PromptManager tests completed successfully.")
+    logger.info("PromptManager 测试成功完成。")
