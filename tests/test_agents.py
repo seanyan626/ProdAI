@@ -1,29 +1,29 @@
 # tests/test_agents.py
 # Agent 相关模块的测试
-import pytest
 import logging
-from unittest.mock import MagicMock, patch
+from unittest.mock import MagicMock
+
+import pytest
 
 # 确保如果任何底层模块需要配置，则加载配置，并设置日志记录。
 # 这可能更适合在 conftest.py 中为所有测试统一处理。
 try:
     from configs.config import load_config
     from configs.logging_config import setup_logging
-    load_config() # 加载 .env 变量、API 密钥等。
-    setup_logging() # 配置测试输出的日志记录
+
+    load_config()  # 加载 .env 变量、API 密钥等。
+    setup_logging()  # 配置测试输出的日志记录
 except ImportError:
     print("警告: 无法为测试导入配置/日志模块。这可能会影响模块行为。")
 
-
-from core.agents.base_agent import BaseAgent, AgentAction, AgentFinish
 # from core.agents.specific_agent import SpecificAgent # 具体 Agent 实现待补充
 from core.models.base_llm import BaseLLM
 from core.tools.base_tool import BaseTool, ToolInputSchema
 from core.memory.simple_memory import SimpleMemory
 from core.prompts.prompt_manager import PromptManager
 
-
 logger = logging.getLogger(__name__)
+
 
 # --- 模拟对象和测试固件 ---
 
@@ -34,14 +34,19 @@ def mock_llm():
     llm.model_name = "mock_llm_model_模拟LLM模型"
     llm.generate.return_value = "模拟的LLM单次生成响应。"
     llm.chat.return_value = {"role": "assistant", "content": "模拟的LLM聊天响应。"}
+
     async def mock_agenerate(*args, **kwargs): return "模拟的异步LLM生成。"
+
     async def mock_achat(*args, **kwargs): return {"role": "assistant", "content": "模拟的异步LLM聊天。"}
+
     llm.agenerate = MagicMock(side_effect=mock_agenerate)
     llm.achat = MagicMock(side_effect=mock_achat)
     return llm
 
+
 class MockToolInput(ToolInputSchema):
     param: str = "default_参数"
+
 
 class MockTool(BaseTool):
     name: str = "mock_tool_模拟工具"
@@ -54,15 +59,18 @@ class MockTool(BaseTool):
     async def _arun(self, param: str = "default_参数") -> str:
         return f"异步模拟工具已执行，参数: {param}"
 
+
 @pytest.fixture
 def mock_tool_list():
     """包含一个模拟工具的列表的测试固件。"""
     return [MockTool()]
 
+
 @pytest.fixture
 def simple_memory():
     """SimpleMemory 实例的测试固件。"""
     return SimpleMemory()
+
 
 @pytest.fixture
 def prompt_manager_with_agent_prompt(tmp_path):
@@ -112,7 +120,8 @@ def specific_agent_components(mock_llm, mock_tool_list, simple_memory, prompt_ma
     #     "memory": simple_memory,
     #     "prompt_manager": reloaded_pm
     # }
-    return {} # 返回空字典，因为依赖的类可能不存在
+    return {}  # 返回空字典，因为依赖的类可能不存在
+
 
 @pytest.mark.skip(reason="SpecificAgent 实现已移除，测试待更新。")
 def test_specific_agent_initialization(specific_agent_components):
@@ -123,11 +132,13 @@ def test_specific_agent_initialization(specific_agent_components):
     # assert agent is not None
     pass
 
+
 @pytest.mark.skip(reason="SpecificAgent 实现已移除，测试待更新。")
 def test_specific_agent_plan_parses_final_answer(specific_agent_components):
     logger.info("测试 SpecificAgent _plan 方法的 Final Answer 解析。")
     # ... 原测试逻辑 ...
     pass
+
 
 @pytest.mark.skip(reason="SpecificAgent 实现已移除，测试待更新。")
 def test_specific_agent_plan_parses_action(specific_agent_components):
@@ -135,17 +146,20 @@ def test_specific_agent_plan_parses_action(specific_agent_components):
     # ... 原测试逻辑 ...
     pass
 
+
 @pytest.mark.skip(reason="SpecificAgent 实现已移除，测试待更新。")
 def test_specific_agent_plan_handles_malformed_json_input(specific_agent_components):
     logger.info("测试 SpecificAgent _plan 处理 Action Input 中格式错误的 JSON。")
     # ... 原测试逻辑 ...
     pass
 
+
 @pytest.mark.skip(reason="SpecificAgent 实现已移除，测试待更新。")
 def test_specific_agent_run_one_step_and_finish(specific_agent_components, mock_tool_list):
     logger.info("测试 SpecificAgent run 方法进行一次工具调用然后完成。")
     # ... 原测试逻辑 ...
     pass
+
 
 # TODO: 针对骨架结构，可以添加一些基础的导入测试或接口存在性测试。
 # 例如，测试 BaseAgent, AgentAction, AgentFinish 是否可以被导入。
@@ -159,5 +173,6 @@ def test_base_classes_importable():
         logger.info("基础 Agent 类成功导入。")
     except ImportError as e:
         pytest.fail(f"无法导入基础 Agent 类: {e}")
+
 
 logger.info("Agent 测试文件已调整为适应骨架代码。多数原测试已跳过。")

@@ -1,6 +1,7 @@
 # main.py
 # 项目主入口文件
 import logging
+
 from configs.config import load_config, APP_NAME
 from configs.logging_config import setup_logging
 
@@ -11,6 +12,7 @@ load_config()
 setup_logging()
 
 logger = logging.getLogger(__name__)
+
 
 def main():
     """
@@ -59,6 +61,7 @@ def main():
     #     logger.error(f"应用执行期间发生错误: {e}", exc_info=True)
 
     logger.info(f"{APP_NAME} (骨架) 已启动并结束。请添加您的实现。")
+
 
 if __name__ == "__main__":
     main()
