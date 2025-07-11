@@ -3,6 +3,7 @@
 from abc import ABC, abstractmethod
 from typing import Any, Dict, List, Optional
 
+
 class BaseLanguageModel(ABC):
     """
     语言模型 (Language Model) 交互的抽象基类。
@@ -33,12 +34,12 @@ class BaseLanguageModel(ABC):
 
     @abstractmethod
     def generate(
-        self,
-        prompt: str,
-        max_tokens: Optional[int] = None,
-        temperature: Optional[float] = None,
-        stop_sequences: Optional[List[str]] = None,
-        **kwargs: Any
+            self,
+            prompt: str,
+            max_tokens: Optional[int] = None,
+            temperature: Optional[float] = None,
+            stop_sequences: Optional[List[str]] = None,
+            **kwargs: Any
     ) -> str:
         """
         为给定的提示生成文本补全。
@@ -48,12 +49,12 @@ class BaseLanguageModel(ABC):
 
     @abstractmethod
     async def agenerate(
-        self,
-        prompt: str,
-        max_tokens: Optional[int] = None,
-        temperature: Optional[float] = None,
-        stop_sequences: Optional[List[str]] = None,
-        **kwargs: Any
+            self,
+            prompt: str,
+            max_tokens: Optional[int] = None,
+            temperature: Optional[float] = None,
+            stop_sequences: Optional[List[str]] = None,
+            **kwargs: Any
     ) -> str:
         """
         异步为给定的提示生成文本补全。
@@ -62,12 +63,12 @@ class BaseLanguageModel(ABC):
         pass
 
     def chat(
-        self,
-        messages: List[Dict[str, str]],
-        max_tokens: Optional[int] = None,
-        temperature: Optional[float] = None,
-        stop_sequences: Optional[List[str]] = None,
-        **kwargs: Any
+            self,
+            messages: List[Dict[str, str]],
+            max_tokens: Optional[int] = None,
+            temperature: Optional[float] = None,
+            stop_sequences: Optional[List[str]] = None,
+            **kwargs: Any
     ) -> Dict[str, Any]:
         """
         为给定的消息序列生成聊天补全。
@@ -76,12 +77,12 @@ class BaseLanguageModel(ABC):
         raise NotImplementedError(f"{self.__class__.__name__} 类不支持通过此方法直接进行聊天补全。请在子类中实现它。")
 
     async def achat(
-        self,
-        messages: List[Dict[str, str]],
-        max_tokens: Optional[int] = None,
-        temperature: Optional[float] = None,
-        stop_sequences: Optional[List[str]] = None,
-        **kwargs: Any
+            self,
+            messages: List[Dict[str, str]],
+            max_tokens: Optional[int] = None,
+            temperature: Optional[float] = None,
+            stop_sequences: Optional[List[str]] = None,
+            **kwargs: Any
     ) -> Dict[str, Any]:
         """
         异步为给定的消息序列生成聊天补全。
