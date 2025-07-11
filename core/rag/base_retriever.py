@@ -1,4 +1,4 @@
-# src/rag/base_retriever.py
+# core/rag/base_retriever.py
 # RAG 系统中文档检索器的抽象基类
 import logging
 from abc import ABC, abstractmethod

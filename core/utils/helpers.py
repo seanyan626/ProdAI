@@ -29,5 +29,5 @@ def truncate_text(text: str, max_length: int, ellipsis: str = "...") -> str:
 
 if __name__ == '__main__':
     # 此处可以添加直接测试此模块内函数的代码
-    logger.info("src.utils.helpers 模块可以直接运行测试（如果包含测试代码）。")
+    logger.info("core.utils.helpers 模块可以直接运行测试（如果包含测试代码）。") # src -> core
     pass

@@ -1,4 +1,4 @@
-# src/tools/search_tool.py
+# core/tools/search_tool.py
 # 示例搜索工具实现
 import logging
 from typing import Any, Dict, Type, Optional

@@ -1,4 +1,4 @@
-# src/rag/simple_rag.py
+# core/rag/simple_rag.py
 # 简单的 RAG（检索增强生成）流程实现
 import logging
 from typing import List, Dict, Any, Optional

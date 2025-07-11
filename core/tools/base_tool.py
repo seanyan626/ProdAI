@@ -1,4 +1,4 @@
-# src/tools/base_tool.py
+# core/tools/base_tool.py
 # Agent 可用工具的抽象基类
 import logging
 from abc import ABC, abstractmethod

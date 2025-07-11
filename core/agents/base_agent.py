@@ -1,4 +1,4 @@
-# src/agents/base_agent.py
+# core/agents/base_agent.py
 # Agent 的抽象基类
 import logging
 from abc import ABC, abstractmethod

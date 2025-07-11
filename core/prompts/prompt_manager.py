@@ -1,4 +1,4 @@
-# src/prompts/prompt_manager.py
+# core/prompts/prompt_manager.py
 # 提示管理器模块
 import logging
 import os
