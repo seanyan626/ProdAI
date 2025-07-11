@@ -1,12 +1,13 @@
-# core/agents/specific_agent.py
+# src/agents/specific_agent.py
 # 一个更具体的 Agent 示例实现
 import logging
+import json
 from typing import Any, List, Dict, Optional, Union
 
-from core.models.base_llm import BaseLLM
-from core.prompts.prompt_manager import PromptManager
-from core.tools.base_tool import BaseTool
 from .base_agent import BaseAgent, AgentAction, AgentFinish
+from core.models.language.base_language_model import BaseLanguageModel # 更新路径和类名
+from core.tools.base_tool import BaseTool
+from core.prompts.prompt_manager import PromptManager
 
 logger = logging.getLogger(__name__)
 
@@ -52,23 +53,24 @@ class SpecificAgent(BaseAgent):
     """
 
     def __init__(
-            self,
-            llm: BaseLLM,
-            tools: Optional[List[BaseTool]] = None,
-            prompt_manager: Optional[PromptManager] = None,
-            agent_prompt_name: str = DEFAULT_SPECIFIC_AGENT_PROMPT_NAME,
-            **kwargs: Any
+        self,
+        llm: BaseLanguageModel, # <--- 已更改
+        tools: Optional[List[BaseTool]] = None,
+        prompt_manager: Optional[PromptManager] = None,
+        agent_prompt_name: str = DEFAULT_SPECIFIC_AGENT_PROMPT_NAME,
+        **kwargs: Any
     ):
         resolved_pm = prompt_manager or PromptManager()
 
         if agent_prompt_name == DEFAULT_SPECIFIC_AGENT_PROMPT_NAME and \
-                not resolved_pm.get_template(DEFAULT_SPECIFIC_AGENT_PROMPT_NAME):
+           not resolved_pm.get_template(DEFAULT_SPECIFIC_AGENT_PROMPT_NAME):
             logger.info(f"未找到默认提示 '{DEFAULT_SPECIFIC_AGENT_PROMPT_NAME}'。正在使用内置内容。")
             resolved_pm.loaded_templates[DEFAULT_SPECIFIC_AGENT_PROMPT_NAME] = \
                 resolved_pm.PromptTemplate(DEFAULT_SPECIFIC_AGENT_PROMPT_CONTENT)
 
         super().__init__(llm, tools, prompt_manager=resolved_pm, agent_prompt_name=agent_prompt_name, **kwargs)
         logger.info(f"SpecificAgent 已使用提示模板 '{self.agent_prompt_name}' 初始化。")
+
 
     def _parse_llm_output(self, llm_output: str) -> Union[AgentAction, AgentFinish, None]:
         """
@@ -81,14 +83,15 @@ class SpecificAgent(BaseAgent):
         if "Final Answer:" in llm_output:
             return AgentFinish(output={"answer": "来自LLM的模拟最终答案"}, log="模拟的思考过程")
         elif "Action:" in llm_output and "Action Input:" in llm_output:
-            # 极简模拟，不真正解析工具名称和输入
-            return AgentAction(tool_name="simulated_tool", tool_input={"query": "模拟查询"}, log="模拟的思考过程")
+             # 极简模拟，不真正解析工具名称和输入
+            return AgentAction(tool_name="simulated_tool", tool_input={"query":"模拟查询"}, log="模拟的思考过程")
         return None
 
+
     def _plan(
-            self,
-            inputs: Dict[str, Any],
-            intermediate_steps: List[Dict[str, Any]],
+        self,
+        inputs: Dict[str, Any],
+        intermediate_steps: List[Dict[str, Any]],
     ) -> Union[AgentAction, AgentFinish]:
         """
         SpecificAgent 的规划逻辑。
@@ -114,16 +117,16 @@ class SpecificAgent(BaseAgent):
 
         # 简化占位符实现：
         logger.info(f"SpecificAgent._plan 调用，输入: {inputs.get('input', '')[:50]}...")
-        if not intermediate_steps:  # 如果是第一步，模拟一个动作
-            return AgentAction(tool_name="search_tool", tool_input={"query": inputs.get("input", "")},
-                               log="需要搜索信息")
-        else:  # 否则，模拟完成
+        if not intermediate_steps: # 如果是第一步，模拟一个动作
+            return AgentAction(tool_name="search_tool", tool_input={"query": inputs.get("input", "")}, log="需要搜索信息")
+        else: # 否则，模拟完成
             return AgentFinish(output={"answer": "这是来自 SpecificAgent 的模拟答案。"}, log="已完成处理。")
 
+
     async def _aplan(
-            self,
-            inputs: Dict[str, Any],
-            intermediate_steps: List[Dict[str, Any]],
+        self,
+        inputs: Dict[str, Any],
+        intermediate_steps: List[Dict[str, Any]],
     ) -> Union[AgentAction, AgentFinish]:
         """
         SpecificAgent 的异步规划逻辑。
@@ -132,8 +135,7 @@ class SpecificAgent(BaseAgent):
         logger.info(f"SpecificAgent._aplan 调用，输入: {inputs.get('input', '')[:50]}...")
         # 异步版本也使用类似的简化逻辑
         if not intermediate_steps:
-            return AgentAction(tool_name="search_tool", tool_input={"query": inputs.get("input", "")},
-                               log="需要异步搜索信息")
+            return AgentAction(tool_name="search_tool", tool_input={"query": inputs.get("input", "")}, log="需要异步搜索信息")
         else:
             return AgentFinish(output={"answer": "这是来自 SpecificAgent 的异步模拟答案。"}, log="已异步完成处理。")
 
@@ -141,10 +143,9 @@ class SpecificAgent(BaseAgent):
 if __name__ == '__main__':
     from configs.config import load_config
     from configs.logging_config import setup_logging
-
-    # from core.models.openai_llm import OpenAILLM # 实际测试时需要
-    # from core.tools.search_tool import SearchTool # 实际测试时需要
-    # from core.memory.simple_memory import SimpleMemory # 实际测试时需要
+    # from src.llms.openai_llm import OpenAILLM # 实际测试时需要
+    # from src.tools.search_tool import SearchTool # 实际测试时需要
+    # from src.memory.simple_memory import SimpleMemory # 实际测试时需要
     # import asyncio # 实际测试时需要
 
     load_config()

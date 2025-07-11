@@ -1,10 +1,10 @@
-# core/utils/helpers.py
+# src/utils/helpers.py
 # 实用工具函数模块
 import logging
+import json
 from typing import Any, Dict
 
 logger = logging.getLogger(__name__)
-
 
 def load_json_file(file_path: str) -> Dict[str, Any]:
     """
@@ -13,14 +13,12 @@ def load_json_file(file_path: str) -> Dict[str, Any]:
     """
     pass
 
-
 def save_json_file(data: Dict[str, Any], file_path: str) -> None:
     """
     将字典保存到 JSON 文件。
     （实现待补充）
     """
     pass
-
 
 def truncate_text(text: str, max_length: int, ellipsis: str = "...") -> str:
     """
@@ -29,8 +27,7 @@ def truncate_text(text: str, max_length: int, ellipsis: str = "...") -> str:
     """
     pass
 
-
 if __name__ == '__main__':
     # 此处可以添加直接测试此模块内函数的代码
-    logger.info("core.utils.helpers 模块可以直接运行测试（如果包含测试代码）。")
+    logger.info("src.utils.helpers 模块可以直接运行测试（如果包含测试代码）。")
     pass

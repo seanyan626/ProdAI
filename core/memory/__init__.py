@@ -4,5 +4,5 @@
 # from .base_memory import BaseMemory
 # from .simple_memory import SimpleMemory
 
-# Or define what `from core.memory import *` imports:
+# Or define what `from src.memory import *` imports:
 # __all__ = ["BaseMemory", "SimpleMemory"]

@@ -1,12 +1,10 @@
-import logging
 import os
-
+import logging
 from dotenv import load_dotenv
 
 # --- 应用元数据 ---
 APP_NAME = "AI 项目框架"  # 应用名称
-APP_VERSION = "0.1.0"  # 应用版本
-
+APP_VERSION = "0.1.0"    # 应用版本
 
 # --- 环境变量加载 ---
 def load_env():
@@ -18,7 +16,7 @@ def load_env():
     # 假设 config.py 位于项目根目录的子目录中。
     # 如果你的结构不同，请相应调整。
     current_dir = os.path.dirname(os.path.abspath(__file__))
-    project_root = os.path.dirname(current_dir)  # 从 configs 向上移动一级到项目根目录
+    project_root = os.path.dirname(current_dir) # 从 configs 向上移动一级到项目根目录
 
     dotenv_path = os.path.join(project_root, ".env")
 
@@ -36,8 +34,7 @@ def load_env():
         logging.info(f"已从 {dotenv_path} 加载环境变量。")
 
 
-_ENV_LOADED = False  # 标记环境变量是否已加载
-
+_ENV_LOADED = False # 标记环境变量是否已加载
 
 def load_config():
     """
@@ -48,7 +45,6 @@ def load_config():
         load_env()
         _ENV_LOADED = True
 
-
 # --- API 密钥和端点 ---
 # 在调用 load_config() 后加载它们
 OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
@@ -58,12 +54,13 @@ OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
 
 
 # --- LLM 设置 ---
-DEFAULT_LLM_MODEL = os.getenv("DEFAULT_LLM_MODEL", "gpt-3.5-turbo")  # 默认 LLM 模型
-DEFAULT_MAX_TOKENS = int(os.getenv("DEFAULT_MAX_TOKENS", "1500"))  # 默认最大 token 数
-DEFAULT_TEMPERATURE = float(os.getenv("DEFAULT_TEMPERATURE", "0.7"))  # 默认温度参数
+DEFAULT_LLM_MODEL = os.getenv("DEFAULT_LLM_MODEL", "gpt-3.5-turbo") # 默认 LLM 模型
+DEFAULT_MAX_TOKENS = int(os.getenv("DEFAULT_MAX_TOKENS", "1500"))   # 默认最大 token 数
+DEFAULT_TEMPERATURE = float(os.getenv("DEFAULT_TEMPERATURE", "0.7")) # 默认温度参数
 
 # --- Agent 设置 ---
-MAX_ITERATIONS = int(os.getenv("MAX_ITERATIONS", "10"))  # Agent 最大迭代次数
+MAX_ITERATIONS = int(os.getenv("MAX_ITERATIONS", "10")) # Agent 最大迭代次数
+
 
 # --- RAG 设置 ---
 # 示例: 知识库路径，可以是相对于项目根目录的路径
@@ -73,9 +70,10 @@ MAX_ITERATIONS = int(os.getenv("MAX_ITERATIONS", "10"))  # Agent 最大迭代次
 
 
 # --- 日志配置 ---
-LOG_LEVEL = os.getenv("LOG_LEVEL", "INFO").upper()  # 日志级别 (DEBUG, INFO, WARNING, ERROR, CRITICAL)
-LOG_FORMAT = "%(asctime)s - %(name)s - %(levelname)s - %(message)s"  # 日志格式
-LOG_FILE = os.getenv("LOG_FILE", None)  # 日志输出文件路径 (例如 "app.log")
+LOG_LEVEL = os.getenv("LOG_LEVEL", "INFO").upper() # 日志级别 (DEBUG, INFO, WARNING, ERROR, CRITICAL)
+LOG_FORMAT = "%(asctime)s - %(name)s - %(levelname)s - %(message)s" # 日志格式
+LOG_FILE = os.getenv("LOG_FILE", None) # 日志输出文件路径 (例如 "app.log")
+
 
 # --- 其他配置 ---
 # 在此添加你的应用可能需要的任何其他全局配置。

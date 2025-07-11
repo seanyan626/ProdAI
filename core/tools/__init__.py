@@ -4,5 +4,5 @@
 # from .base_tool import BaseTool
 # from .search_tool import SearchTool
 
-# Or define what `from core.tools import *` imports:
+# Or define what `from src.tools import *` imports:
 # __all__ = ["BaseTool", "SearchTool"]
