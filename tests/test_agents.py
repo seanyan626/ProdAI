@@ -17,7 +17,7 @@ except ImportError:
 
 from core.agents.base_agent import BaseAgent, AgentAction, AgentFinish # 'src' -> 'core'
 # from core.agents.specific_agent import SpecificAgent # 具体 Agent 实现待补充
-from core.models.language.base_language_model import BaseLanguageModel # 更新路径和类名
+from core.models.llm.base_llm import BaseLLM # <--- 更新路径和类名
 from core.tools.base_tool import BaseTool, ToolInputSchema # 'src' -> 'core'
 from core.memory.simple_memory import SimpleMemory # 'src' -> 'core'
 from core.prompts.prompt_manager import PromptManager # 'src' -> 'core'
@@ -29,13 +29,13 @@ logger = logging.getLogger(__name__)
 
 @pytest.fixture
 def mock_llm():
-    """模拟语言模型的测试固件。""" # 更新描述
-    llm = MagicMock(spec=BaseLanguageModel) # <--- 已更改 spec
-    llm.model_name = "mock_language_model_模拟语言模型" # 更新描述性名称
-    llm.generate.return_value = "模拟的语言模型单次生成响应。"
-    llm.chat.return_value = {"role": "assistant", "content": "模拟的语言模型聊天响应."}
-    async def mock_agenerate(*args, **kwargs): return "模拟的异步语言模型生成。"
-    async def mock_achat(*args, **kwargs): return {"role": "assistant", "content": "模拟的异步语言模型聊天响应。"} # 更新描述性文本
+    """模拟LLM的测试固件。""" # 更新描述
+    llm = MagicMock(spec=BaseLLM) # <--- 已更改 spec
+    llm.model_name = "mock_llm_model_模拟LLM" # 更新描述性名称
+    llm.generate.return_value = "模拟的LLM单次生成响应。" # 更新描述性文本
+    llm.chat.return_value = {"role": "assistant", "content": "模拟的LLM聊天响应."} # 更新描述性文本
+    async def mock_agenerate(*args, **kwargs): return "模拟的异步LLM生成。" # 更新描述性文本
+    async def mock_achat(*args, **kwargs): return {"role": "assistant", "content": "模拟的异步LLM聊天响应。"}
     llm.agenerate = MagicMock(side_effect=mock_agenerate)
     llm.achat = MagicMock(side_effect=mock_achat)
     return llm

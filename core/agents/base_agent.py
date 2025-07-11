@@ -4,7 +4,7 @@ import logging
 from abc import ABC, abstractmethod
 from typing import Any, List, Dict, Optional, Union
 
-from core.models.language.base_language_model import BaseLanguageModel
+from core.models.llm.base_llm import BaseLLM # 更新路径和类名
 from core.memory.base_memory import BaseMemory
 from core.memory.simple_memory import SimpleMemory # 默认内存实现
 from core.tools.base_tool import BaseTool
@@ -41,7 +41,7 @@ class BaseAgent(ABC):
 
     def __init__(
         self,
-        llm: BaseLanguageModel, # <--- 已更改
+        llm: BaseLLM, # <--- 已更改回 BaseLLM
         tools: Optional[List[BaseTool]] = None,
         memory: Optional[BaseMemory] = None,
         prompt_manager: Optional[PromptManager] = None,
@@ -62,7 +62,7 @@ class BaseAgent(ABC):
         #     logger.warning(f"在 PromptManager 中未找到 Agent 提示模板 '{self.agent_prompt_name}'。"
         #                    "缺少主要提示，Agent 可能无法正常工作。")
 
-        logger.info(f"Agent '{self.__class__.__name__}' 已初始化。语言模型: {llm.model_name}, " # <--- "LLM" -> "语言模型"
+        logger.info(f"Agent '{self.__class__.__name__}' 已初始化。LLM: {llm.model_name}, " # <--- "语言模型" -> "LLM"
                     f"工具: {[tool.name for tool in self.tools]}, 最大迭代次数: {max_iterations}")
 
     @abstractmethod

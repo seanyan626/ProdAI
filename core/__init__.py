@@ -16,4 +16,4 @@ __version__ = "0.1.0" # 版本号
 
 # 或者，如果你想直接在 core 级别暴露特定的类/函数 (对于大型项目不太常见):
 # from .agents.base_agent import BaseAgent
-# from .models.language.base_language_model import BaseLanguageModel # 更新的路径和类名
+# from .models.llm.base_llm import BaseLLM # 更新的路径和类名

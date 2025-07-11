@@ -8,7 +8,7 @@ import json
 try:
     from configs.config import load_config, OPENAI_API_KEY
     from configs.logging_config import setup_logging
-    from core.models.language.openai_language_model import OpenAILanguageModel # 更新路径和类名
+    from core.models.llm.openai_llm import OpenAILLM # 更新路径和类名
     from core.agents.specific_agent import SpecificAgent
     from core.tools.search_tool import SearchTool
     from core.memory.simple_memory import SimpleMemory
@@ -42,9 +42,9 @@ def run_example():
     agent = None # 初始化 agent 变量
     try:
         logger.info("尝试初始化组件...")
-        # 注意：OpenAILanguageModel 现在内部使用 langchain
-        llm = OpenAILanguageModel(model_name="gpt-3.5-turbo", temperature=0.1) # <--- 已更改类名
-        logger.info(f"语言模型 ({getattr(llm, 'model_name', '未知模型')}) 初始化完成。") # <--- "LLM" -> "语言模型"
+        # 注意：OpenAILLM 现在内部使用 langchain
+        llm = OpenAILLM(model_name="gpt-3.5-turbo", temperature=0.1) # <--- 已更改类名回 OpenAILLM
+        logger.info(f"LLM ({getattr(llm, 'model_name', '未知模型')}) 初始化完成。") # <--- "语言模型" -> "LLM"
 
         search_tool = SearchTool()
         tools = [search_tool]

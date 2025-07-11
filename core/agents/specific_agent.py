@@ -5,7 +5,7 @@ import json
 from typing import Any, List, Dict, Optional, Union
 
 from .base_agent import BaseAgent, AgentAction, AgentFinish
-from core.models.language.base_language_model import BaseLanguageModel # 更新路径和类名
+from core.models.llm.base_llm import BaseLLM # 更新路径和类名
 from core.tools.base_tool import BaseTool
 from core.prompts.prompt_manager import PromptManager
 
@@ -54,7 +54,7 @@ class SpecificAgent(BaseAgent):
 
     def __init__(
         self,
-        llm: BaseLanguageModel, # <--- 已更改
+        llm: BaseLLM, # <--- 已更改回 BaseLLM
         tools: Optional[List[BaseTool]] = None,
         prompt_manager: Optional[PromptManager] = None,
         agent_prompt_name: str = DEFAULT_SPECIFIC_AGENT_PROMPT_NAME,

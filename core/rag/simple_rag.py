@@ -4,8 +4,8 @@ import logging
 from typing import List, Dict, Any, Optional
 
 from .base_retriever import BaseRetriever, Document
-from core.models.language.base_language_model import BaseLanguageModel # 更新路径和类名
-from core.prompts.prompt_manager import PromptManager # 更新路径
+from core.models.llm.base_llm import BaseLLM # 更新路径和类名
+from core.prompts.prompt_manager import PromptManager
 
 logger = logging.getLogger(__name__)
 
@@ -33,7 +33,7 @@ class SimpleRAG:
     def __init__(
         self,
         retriever: BaseRetriever,
-        llm: BaseLanguageModel, # <--- 已更改
+        llm: BaseLLM, # <--- 已更改回 BaseLLM
         prompt_manager: Optional[PromptManager] = None,
         rag_prompt_name: str = DEFAULT_RAG_PROMPT_NAME
     ):
