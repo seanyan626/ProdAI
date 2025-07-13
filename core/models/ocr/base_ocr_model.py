@@ -2,24 +2,21 @@
 # OCR (光学字符识别) 模型的抽象基类
 import logging
 from abc import ABC, abstractmethod
-from typing import Union, List, Dict, Any  # 引入 List, Dict, Any 用于更结构化的输出
+from typing import Union, List, Dict, Any # 引入 List, Dict, Any 用于更结构化的输出
 
 logger = logging.getLogger(__name__)
-
 
 class OCRResult:
     """
     用于封装OCR识别结果的数据类。
     可以根据需要扩展，例如包含每个文本块的置信度、位置信息等。
     """
-
     def __init__(self, full_text: str, segments: Optional[List[Dict[str, Any]]] = None):
-        self.full_text: str = full_text  # 识别出的完整文本
-        self.segments: List[Dict[str, Any]] = segments or []  # 可选的文本段列表，每个段可以包含 'text', 'confidence', 'bbox' 等信息
+        self.full_text: str = full_text # 识别出的完整文本
+        self.segments: List[Dict[str, Any]] = segments or [] # 可选的文本段列表，每个段可以包含 'text', 'confidence', 'bbox' 等信息
 
     def __repr__(self):
         return f"OCRResult(full_text='{self.full_text[:100]}...', segments_count={len(self.segments)})"
-
 
 class BaseOCRModel(ABC):
     """
@@ -76,7 +73,6 @@ class BaseOCRModel(ABC):
             "config": self.config,
             "type": "OCRModel"
         }
-
 
 if __name__ == '__main__':
     logger.info("BaseOCRModel 模块。这是一个抽象基类，不应直接实例化。OCRResult 类已定义。")

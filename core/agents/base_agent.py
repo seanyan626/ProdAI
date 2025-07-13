@@ -4,33 +4,29 @@ import logging
 from abc import ABC, abstractmethod
 from typing import Any, List, Dict, Optional, Union
 
+from core.models.llm.base_llm import BaseLLM # 更新路径和类名
 from core.memory.base_memory import BaseMemory
-from core.memory.simple_memory import SimpleMemory  # 默认内存实现
-from core.models.llm.base_llm import BaseLLM  # 更新路径和类名
-from core.prompts.prompt_manager import PromptManager
+from core.memory.simple_memory import SimpleMemory # 默认内存实现
 from core.tools.base_tool import BaseTool
+from core.prompts.prompt_manager import PromptManager
 
 logger = logging.getLogger(__name__)
 
-
 class AgentAction:
     """表示 Agent 决定采取的行动。"""
-
     def __init__(self, tool_name: str, tool_input: Dict[str, Any], log: Optional[str] = None):
-        self.tool_name = tool_name  # 工具名称
-        self.tool_input = tool_input  # 工具输入
-        self.log = log  # Agent 对此行动的思考过程或理由
+        self.tool_name = tool_name # 工具名称
+        self.tool_input = tool_input # 工具输入
+        self.log = log # Agent 对此行动的思考过程或理由
 
     def __repr__(self):
         return f"AgentAction(tool='{self.tool_name}', input={self.tool_input}, log='{self.log}')"
 
-
 class AgentFinish:
     """表示 Agent 完成任务时的最终输出。"""
-
     def __init__(self, output: Dict[str, Any], log: Optional[str] = None):
-        self.output = output  # 最终答案或结果
-        self.log = log  # 最终思考或总结
+        self.output = output # 最终答案或结果
+        self.log = log # 最终思考或总结
 
     def __repr__(self):
         return f"AgentFinish(output={self.output}, log='{self.log}')"
@@ -44,14 +40,14 @@ class BaseAgent(ABC):
     """
 
     def __init__(
-            self,
-            llm: BaseLLM,  # <--- 已更改回 BaseLLM
-            tools: Optional[List[BaseTool]] = None,
-            memory: Optional[BaseMemory] = None,
-            prompt_manager: Optional[PromptManager] = None,
-            max_iterations: int = 10,
-            agent_prompt_name: Optional[str] = None,
-            **kwargs: Any
+        self,
+        llm: BaseLLM, # <--- 已更改回 BaseLLM
+        tools: Optional[List[BaseTool]] = None,
+        memory: Optional[BaseMemory] = None,
+        prompt_manager: Optional[PromptManager] = None,
+        max_iterations: int = 10,
+        agent_prompt_name: Optional[str] = None,
+        **kwargs: Any
     ):
         self.llm = llm
         self.tools = tools or []
@@ -66,14 +62,14 @@ class BaseAgent(ABC):
         #     logger.warning(f"在 PromptManager 中未找到 Agent 提示模板 '{self.agent_prompt_name}'。"
         #                    "缺少主要提示，Agent 可能无法正常工作。")
 
-        logger.info(f"Agent '{self.__class__.__name__}' 已初始化。LLM: {llm.model_name}, "  # <--- "语言模型" -> "LLM"
+        logger.info(f"Agent '{self.__class__.__name__}' 已初始化。LLM: {llm.model_name}, " # <--- "语言模型" -> "LLM"
                     f"工具: {[tool.name for tool in self.tools]}, 最大迭代次数: {max_iterations}")
 
     @abstractmethod
     def _plan(
-            self,
-            inputs: Dict[str, Any],
-            intermediate_steps: List[Dict[str, Any]],
+        self,
+        inputs: Dict[str, Any],
+        intermediate_steps: List[Dict[str, Any]],
     ) -> Union[AgentAction, AgentFinish]:
         """
         Agent 决定下一步行动或是否应完成的核心逻辑。
@@ -82,9 +78,9 @@ class BaseAgent(ABC):
         pass
 
     async def _aplan(
-            self,
-            inputs: Dict[str, Any],
-            intermediate_steps: List[Dict[str, Any]],
+        self,
+        inputs: Dict[str, Any],
+        intermediate_steps: List[Dict[str, Any]],
     ) -> Union[AgentAction, AgentFinish]:
         """
         规划逻辑的异步版本。
@@ -93,6 +89,7 @@ class BaseAgent(ABC):
         # logger.warning(f"Agent '{self.__class__.__name__}' 没有特定的异步规划逻辑。将回退到同步 _plan。")
         # raise NotImplementedError(f"{self.__class__.__name__}._aplan() 未实现。")
         pass
+
 
     def _construct_scratchpad(self, intermediate_steps: List[Dict[str, Any]]) -> str:
         """
@@ -111,7 +108,7 @@ class BaseAgent(ABC):
         #     if observation is not None:
         #         scratchpad += f"观察: {str(observation)}\n"
         # return scratchpad.strip()
-        return "模拟的暂存区内容。"  # 占位符
+        return "模拟的暂存区内容。" # 占位符
 
     def _get_tool_info_string(self) -> str:
         """
@@ -123,7 +120,8 @@ class BaseAgent(ABC):
         # tool_descs = []
         # # ... (具体格式化逻辑)
         # return "\n\n".join(tool_descs)
-        return "模拟的工具信息字符串。"  # 占位符
+        return "模拟的工具信息字符串。" # 占位符
+
 
     def run(self, initial_input: Union[str, Dict[str, Any]], **kwargs) -> Dict[str, Any]:
         """
@@ -132,7 +130,7 @@ class BaseAgent(ABC):
         """
         logger.info(f"BaseAgent.run 调用，初始输入: {str(initial_input)[:50]}...")
         # 循环、调用 _plan、执行工具、处理 AgentFinish 的逻辑将在此处
-        return {"answer": "来自 BaseAgent.run 的模拟最终答案。"}  # 占位符
+        return {"answer": "来自 BaseAgent.run 的模拟最终答案。"} # 占位符
 
     async def arun(self, initial_input: Union[str, Dict[str, Any]], **kwargs) -> Dict[str, Any]:
         """
@@ -141,13 +139,12 @@ class BaseAgent(ABC):
         """
         logger.info(f"BaseAgent.arun 调用，初始输入: {str(initial_input)[:50]}...")
         # 类似的异步循环逻辑
-        return {"answer": "来自 BaseAgent.arun 的模拟异步最终答案。"}  # 占位符
+        return {"answer": "来自 BaseAgent.arun 的模拟异步最终答案。"} # 占位符
 
 
 if __name__ == '__main__':
     from configs.config import load_config
     from configs.logging_config import setup_logging
-
     load_config()
     setup_logging()
     logger.info("BaseAgent 模块。这是一个抽象基类，通常不直接运行。AgentAction 和 AgentFinish 类已定义。")

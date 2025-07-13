@@ -1,21 +1,17 @@
 # core/tools/search_tool.py
 # 示例搜索工具实现
 import logging
-from typing import Any, Dict, Type
-
+from typing import Any, Dict, Type, Optional
 from pydantic import BaseModel, Field
+# import requests # 实际使用时取消注释
 
 from .base_tool import BaseTool
 
-# import requests # 实际使用时取消注释
-
 logger = logging.getLogger(__name__)
-
 
 class SearchToolInput(BaseModel):
     query: str = Field(..., description="搜索查询字符串。")
     num_results: int = Field(3, description="要返回的搜索结果数量。", ge=1, le=10)
-
 
 # def mock_search_api(query: str, num_results: int) -> Dict[str, Any]:
 #     """
@@ -32,7 +28,7 @@ class SearchTool(BaseTool):
     一个使用 (模拟的) 搜索引擎执行网络搜索的工具。
     （实现待补充）
     """
-    name: str = "web_search"  # 工具名称：网页搜索
+    name: str = "web_search" # 工具名称：网页搜索
     description: str = (
         "为给定的查询执行网络搜索并返回结果列表。"
         "可用于在互联网上查找信息、时事或特定主题。"
@@ -55,14 +51,12 @@ class SearchTool(BaseTool):
         """
         logger.info(f"SearchTool._arun 调用，查询: '{query}', 结果数量: {num_results}")
         # 实际的 API 调用或模拟逻辑将在此处
-        return {"query": query,
-                "results": [{"title": f"关于 '{query}' 的异步模拟结果1", "snippet": "这是异步模拟摘要..."}]}
+        return {"query": query, "results": [{"title": f"关于 '{query}' 的异步模拟结果1", "snippet": "这是异步模拟摘要..."}]}
 
 
 if __name__ == '__main__':
     from configs.config import load_config
     from configs.logging_config import setup_logging
-
     # import asyncio # 如果要测试异步方法
 
     load_config()

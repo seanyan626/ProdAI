@@ -6,14 +6,12 @@ from typing import List, Dict, Any, Optional
 
 logger = logging.getLogger(__name__)
 
-
 class Document:
     """
     表示一个文档的简单数据结构，包含页面内容和元数据。
     """
-
     def __init__(self, page_content: str, metadata: Optional[Dict[str, Any]] = None, **kwargs):
-        self.page_content = page_content  # 页面内容
+        self.page_content = page_content # 页面内容
         self.metadata = metadata or {}  # 元数据
         # 允许将任意附加字段作为元数据的一部分，以提高灵活性
         if kwargs:
@@ -21,7 +19,6 @@ class Document:
 
     def __repr__(self):
         return f"Document(页面内容='{self.page_content[:50]}...', 元数据={self.metadata})"
-
 
 class BaseRetriever(ABC):
     """
@@ -67,7 +64,6 @@ class BaseRetriever(ABC):
 if __name__ == '__main__':
     from configs.config import load_config
     from configs.logging_config import setup_logging
-
     load_config()
     setup_logging()
     logger.info("BaseRetriever 模块。这是一个抽象基类，通常不直接运行。Document 类已定义。")

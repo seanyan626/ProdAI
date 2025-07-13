@@ -4,19 +4,14 @@ import logging
 from typing import Any, Dict, List, Optional
 
 from langchain_core.messages import HumanMessage, AIMessage, SystemMessage, BaseMessage
-# RunnableConfigurableAlternatives 似乎不是直接用于此场景的标准导入，
-# Langchain 通常通过 .bind() 或 .with_options() 来处理运行时参数修改。
-# 我们将主要依赖 ChatOpenAI 的参数和 .bind() 方法。
 from langchain_openai import ChatOpenAI
 
+from .base_llm import BaseLLM
 from configs.config import OPENAI_API_KEY, DEFAULT_LLM_MODEL, DEFAULT_MAX_TOKENS, DEFAULT_TEMPERATURE, load_config
-from .base_llm import BaseLLM  # 更新导入的基类名和文件名引用
 
-# 确保在导入或使用此模块时加载配置。
 load_config()
 
 logger = logging.getLogger(__name__)
-
 
 def _convert_dict_messages_to_langchain(messages: List[Dict[str, str]]) -> List[BaseMessage]:
     """将字典格式的消息列表转换为 Langchain BaseMessage 对象列表。"""
@@ -35,19 +30,17 @@ def _convert_dict_messages_to_langchain(messages: List[Dict[str, str]]) -> List[
             lc_messages.append(HumanMessage(content=content))
     return lc_messages
 
-
-class OpenAILLM(BaseLLM):  # 类名已更改，继承的基类也已更改
+class OpenAILLM(BaseLLM):
     """
     使用 Langchain 封装 OpenAI LLM (GPT-3.5-turbo, GPT-4 等)。
     """
-
     def __init__(
-            self,
-            model_name: str = DEFAULT_LLM_MODEL,
-            api_key: Optional[str] = OPENAI_API_KEY,
-            temperature: Optional[float] = DEFAULT_TEMPERATURE,
-            max_tokens: Optional[int] = DEFAULT_MAX_TOKENS,
-            **kwargs: Any
+        self,
+        model_name: str = DEFAULT_LLM_MODEL,
+        api_key: Optional[str] = OPENAI_API_KEY,
+        temperature: Optional[float] = DEFAULT_TEMPERATURE,
+        max_tokens: Optional[int] = DEFAULT_MAX_TOKENS,
+        **kwargs: Any
     ):
         all_kwargs = {
             "temperature": temperature,
@@ -79,11 +72,11 @@ class OpenAILLM(BaseLLM):  # 类名已更改，继承的基类也已更改
             raise
 
     def _get_configured_client(
-            self,
-            max_tokens_runtime: Optional[int] = None,
-            temperature_runtime: Optional[float] = None,  # 注意：运行时修改 temperature 可能需要 .with_options
-            stop_sequences_runtime: Optional[List[str]] = None,
-            **kwargs_runtime: Any
+        self,
+        max_tokens_runtime: Optional[int] = None,
+        temperature_runtime: Optional[float] = None,
+        stop_sequences_runtime: Optional[List[str]] = None,
+        **kwargs_runtime: Any
     ) -> ChatOpenAI:
         """根据运行时参数获取配置好的 Langchain 客户端。"""
         if not self.client:
@@ -94,32 +87,27 @@ class OpenAILLM(BaseLLM):  # 类名已更改，继承的基类也已更改
         if stop_sequences_runtime:
             binding_kwargs["stop"] = stop_sequences_runtime
         if max_tokens_runtime is not None:
-            # ChatOpenAI 的 max_tokens 在初始化时设置，运行时覆盖通常通过 bind 或 with_options
-            # 对于 .invoke/.ainvoke, max_tokens 可以通过 model_kwargs 传递，或者直接作为顶层参数（取决于版本）
-            # 更安全的做法是使用 .bind()
-            binding_kwargs["max_tokens"] = max_tokens_runtime
+             binding_kwargs["max_tokens"] = max_tokens_runtime
 
-        # 处理额外的 kwargs_runtime，这些可能是模型特定的参数
         if kwargs_runtime:
             binding_kwargs.update(kwargs_runtime)
 
         if temperature_runtime is not None and temperature_runtime != self.config.get("temperature"):
-            logger.info(
-                f"为本次调用将 temperature 从 {self.config.get('temperature')} 临时绑定为 {temperature_runtime}。")
-            # 注意：.bind() 返回一个新的 runnable，原始 client 不变
+            logger.info(f"为本次调用将 temperature 从 {self.config.get('temperature')} 临时绑定为 {temperature_runtime}。")
             return self.client.bind(temperature=temperature_runtime, **binding_kwargs)
         elif binding_kwargs:
             return self.client.bind(**binding_kwargs)
 
         return self.client
 
+
     def generate(
-            self,
-            prompt: str,
-            max_tokens: Optional[int] = None,
-            temperature: Optional[float] = None,
-            stop_sequences: Optional[List[str]] = None,
-            **kwargs: Any
+        self,
+        prompt: str,
+        max_tokens: Optional[int] = None,
+        temperature: Optional[float] = None,
+        stop_sequences: Optional[List[str]] = None,
+        **kwargs: Any
     ) -> str:
 
         configured_client = self._get_configured_client(max_tokens, temperature, stop_sequences, **kwargs)
@@ -130,8 +118,7 @@ class OpenAILLM(BaseLLM):  # 类名已更改，继承的基类也已更改
                 f"Langchain 调用 generate (实为 chat invoke)。模型: {self.model_name}。提示: '{prompt[:100]}...'。"
             )
             response_message = configured_client.invoke(lc_messages)
-            generated_text = response_message.content.strip() if isinstance(response_message.content, str) else str(
-                response_message.content)
+            generated_text = response_message.content.strip() if isinstance(response_message.content, str) else str(response_message.content)
             logger.debug(f"Langchain OpenAI 响应: '{generated_text[:100]}...'")
             return generated_text
         except Exception as e:
@@ -139,12 +126,12 @@ class OpenAILLM(BaseLLM):  # 类名已更改，继承的基类也已更改
             return f"错误：LLM 生成失败 - {e}"
 
     async def agenerate(
-            self,
-            prompt: str,
-            max_tokens: Optional[int] = None,
-            temperature: Optional[float] = None,
-            stop_sequences: Optional[List[str]] = None,
-            **kwargs: Any
+        self,
+        prompt: str,
+        max_tokens: Optional[int] = None,
+        temperature: Optional[float] = None,
+        stop_sequences: Optional[List[str]] = None,
+        **kwargs: Any
     ) -> str:
         configured_client = self._get_configured_client(max_tokens, temperature, stop_sequences, **kwargs)
         lc_messages = [HumanMessage(content=prompt)]
@@ -154,8 +141,7 @@ class OpenAILLM(BaseLLM):  # 类名已更改，继承的基类也已更改
                 f"Langchain 异步调用 agenerate (实为 chat ainvoke)。模型: {self.model_name}。提示: '{prompt[:100]}...'。"
             )
             response_message = await configured_client.ainvoke(lc_messages)
-            generated_text = response_message.content.strip() if isinstance(response_message.content, str) else str(
-                response_message.content)
+            generated_text = response_message.content.strip() if isinstance(response_message.content, str) else str(response_message.content)
             logger.debug(f"Langchain OpenAI 异步响应: '{generated_text[:100]}...'")
             return generated_text
         except Exception as e:
@@ -163,12 +149,12 @@ class OpenAILLM(BaseLLM):  # 类名已更改，继承的基类也已更改
             return f"错误：LLM 异步生成失败 - {e}"
 
     def chat(
-            self,
-            messages: List[Dict[str, str]],
-            max_tokens: Optional[int] = None,
-            temperature: Optional[float] = None,
-            stop_sequences: Optional[List[str]] = None,
-            **kwargs: Any
+        self,
+        messages: List[Dict[str, str]],
+        max_tokens: Optional[int] = None,
+        temperature: Optional[float] = None,
+        stop_sequences: Optional[List[str]] = None,
+        **kwargs: Any
     ) -> Dict[str, Any]:
         configured_client = self._get_configured_client(max_tokens, temperature, stop_sequences, **kwargs)
         lc_messages = _convert_dict_messages_to_langchain(messages)
@@ -178,27 +164,26 @@ class OpenAILLM(BaseLLM):  # 类名已更改，继承的基类也已更改
                 f"Langchain 调用 chat (invoke)。模型: {self.model_name}。消息数: {len(lc_messages)}。"
             )
             response_message = configured_client.invoke(lc_messages)
-            content_str = response_message.content.strip() if isinstance(response_message.content, str) else str(
-                response_message.content)
+            content_str = response_message.content.strip() if isinstance(response_message.content, str) else str(response_message.content)
             logger.debug(f"Langchain OpenAI 聊天响应: 角色: assistant, 内容: '{content_str[:100]}...'")
 
             return_dict = {"role": "assistant", "content": content_str}
             if hasattr(response_message, 'response_metadata') and response_message.response_metadata:
                 return_dict["metadata"] = response_message.response_metadata
                 if "token_usage" in response_message.response_metadata:
-                    return_dict["token_usage"] = response_message.response_metadata["token_usage"]
+                     return_dict["token_usage"] = response_message.response_metadata["token_usage"]
             return return_dict
         except Exception as e:
             logger.error(f"Langchain OpenAI chat 调用失败: {e}", exc_info=True)
             return {"role": "assistant", "content": f"错误：LLM 聊天失败 - {e}", "error": str(e)}
 
     async def achat(
-            self,
-            messages: List[Dict[str, str]],
-            max_tokens: Optional[int] = None,
-            temperature: Optional[float] = None,
-            stop_sequences: Optional[List[str]] = None,
-            **kwargs: Any
+        self,
+        messages: List[Dict[str, str]],
+        max_tokens: Optional[int] = None,
+        temperature: Optional[float] = None,
+        stop_sequences: Optional[List[str]] = None,
+        **kwargs: Any
     ) -> Dict[str, Any]:
         configured_client = self._get_configured_client(max_tokens, temperature, stop_sequences, **kwargs)
         lc_messages = _convert_dict_messages_to_langchain(messages)
@@ -208,25 +193,22 @@ class OpenAILLM(BaseLLM):  # 类名已更改，继承的基类也已更改
                 f"Langchain 异步调用 achat (ainvoke)。模型: {self.model_name}。消息数: {len(lc_messages)}。"
             )
             response_message = await configured_client.ainvoke(lc_messages)
-            content_str = response_message.content.strip() if isinstance(response_message.content, str) else str(
-                response_message.content)
+            content_str = response_message.content.strip() if isinstance(response_message.content, str) else str(response_message.content)
             logger.debug(f"Langchain OpenAI 异步聊天响应: 角色: assistant, 内容: '{content_str[:100]}...'")
 
             return_dict = {"role": "assistant", "content": content_str}
             if hasattr(response_message, 'response_metadata') and response_message.response_metadata:
                 return_dict["metadata"] = response_message.response_metadata
                 if "token_usage" in response_message.response_metadata:
-                    return_dict["token_usage"] = response_message.response_metadata["token_usage"]
+                     return_dict["token_usage"] = response_message.response_metadata["token_usage"]
             return return_dict
         except Exception as e:
             logger.error(f"Langchain OpenAI achat 调用失败: {e}", exc_info=True)
             return {"role": "assistant", "content": f"错误：LLM 异步聊天失败 - {e}", "error": str(e)}
 
-
 if __name__ == '__main__':
     import asyncio
     from configs.logging_config import setup_logging
-
     setup_logging()
 
     if not OPENAI_API_KEY or OPENAI_API_KEY == "YOUR_API_KEY_HERE":
@@ -247,18 +229,15 @@ if __name__ == '__main__':
                 {"role": "system", "content": "你是一个乐于助人的AI助手。"},
                 {"role": "user", "content": "你好，请问法国的首都是哪里？"}
             ]
-            sync_chat_response = llm.chat(chat_messages_sync, stop_sequences=["\nHuman:"],
-                                          temperature=0.1)  # 示例运行时覆盖 temperature
+            sync_chat_response = llm.chat(chat_messages_sync, stop_sequences=["\nHuman:"], temperature=0.1) # 示例运行时覆盖 temperature
             logger.info(f"同步 Chat 响应: {sync_chat_response}")
-            assert "巴黎" in sync_chat_response.get("content", "").lower() or "paris" in sync_chat_response.get(
-                "content", "").lower()
+            assert "巴黎" in sync_chat_response.get("content", "").lower() or "paris" in sync_chat_response.get("content", "").lower()
 
             logger.info("\n--- 测试同步 Generate (通过 Chat 实现) ---")
             sync_generate_prompt = "简单介绍一下Python语言的特点。"
             sync_generate_response = llm.generate(sync_generate_prompt, max_tokens=100)
             logger.info(f"同步 Generate 响应: {sync_generate_response}")
             assert len(sync_generate_response) > 10
-
 
             async def run_async_tests():
                 logger.info("\n--- 测试异步 Chat ---")
@@ -274,7 +253,6 @@ if __name__ == '__main__':
                 async_generate_response = await llm.agenerate(async_generate_prompt)
                 logger.info(f"异步 Generate 响应: {async_generate_response}")
                 assert async_generate_response
-
 
             logger.info("\n开始异步测试...")
             asyncio.run(run_async_tests())

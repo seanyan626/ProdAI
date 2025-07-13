@@ -1,13 +1,12 @@
 # tests/models/ocr/test_openai_ocr_model.py
 # OpenAIOCRModel 的单元测试 (当前为骨架)
-import logging
-
 import pytest
+import logging
+from unittest.mock import MagicMock, patch
 
 try:
     from configs.config import load_config
     from configs.logging_config import setup_logging
-
     load_config()
     setup_logging()
 except ImportError:
@@ -18,13 +17,11 @@ from core.models.ocr.openai_ocr_model import OpenAIOCRModel
 
 logger = logging.getLogger(__name__)
 
-
 @pytest.fixture
 def openai_ocr_model_skeleton():
     """提供 OpenAIOCRModel 的骨架实例。"""
     # 由于是骨架，这里不需要模拟API密钥等
     return OpenAIOCRModel(model_name="test_ocr_skeleton")
-
 
 def test_openai_ocr_model_initialization(openai_ocr_model_skeleton):
     logger.info("测试 OpenAIOCRModel (骨架) 初始化...")
@@ -34,7 +31,6 @@ def test_openai_ocr_model_initialization(openai_ocr_model_skeleton):
     model_info = model.get_model_info()
     assert model_info["type"] == "OCRModel"
     logger.info("OpenAIOCRModel (骨架) 初始化测试通过。")
-
 
 @pytest.mark.skip(reason="OpenAIOCRModel recognize_text 方法是骨架，待具体实现后测试。")
 def test_openai_ocr_model_recognize_text_skeleton(openai_ocr_model_skeleton):
@@ -56,7 +52,6 @@ def test_openai_ocr_model_recognize_text_skeleton(openai_ocr_model_skeleton):
     assert result_bytes.full_text == expected_placeholder_text
     logger.info("OpenAIOCRModel (骨架) recognize_text 方法基本调用测试通过 (返回占位符)。")
 
-
 @pytest.mark.skip(reason="OpenAIOCRModel arecognize_text 方法是骨架，待具体实现后测试。")
 @pytest.mark.asyncio
 async def test_openai_ocr_model_arecognize_text_skeleton(openai_ocr_model_skeleton):
@@ -74,6 +69,5 @@ async def test_openai_ocr_model_arecognize_text_skeleton(openai_ocr_model_skelet
     result_bytes = await model.arecognize_text(dummy_image_bytes)
     assert result_bytes.full_text == expected_placeholder_text
     logger.info("OpenAIOCRModel (骨架) arecognize_text 方法基本调用测试通过 (返回占位符)。")
-
 
 logger.info("OpenAIOCRModel (骨架) 的测试文件创建完毕。")

@@ -2,10 +2,9 @@
 # 文本嵌入模型的抽象基类
 import logging
 from abc import ABC, abstractmethod
-from typing import List
+from typing import List, Union
 
 logger = logging.getLogger(__name__)
-
 
 class BaseEmbeddingModel(ABC):
     """
@@ -88,7 +87,6 @@ class BaseEmbeddingModel(ABC):
             "config": self.config,
             "type": "EmbeddingModel"
         }
-
 
 if __name__ == '__main__':
     logger.info("BaseEmbeddingModel 模块。这是一个抽象基类，不应直接实例化。")
