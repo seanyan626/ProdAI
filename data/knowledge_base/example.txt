@@ -1,0 +1,11 @@
+This is an example text file that can be used as part of a knowledge base for Retrieval Augmented Generation (RAG).
+
+AI Project Framework - Key Information:
+- The framework is modular, with components for agents, LLMs, memory, prompts, RAG, and tools.
+- Configuration is managed via .env files and the `configs` module.
+- The main source code is located in the `src/` directory.
+- Example usage scripts are in the `examples/` directory.
+
+RAG systems use documents like this one to provide context to Large Language Models, helping them generate more accurate and relevant responses.
+You can add more files to this `knowledge_base` directory, in various formats (like .txt, .md, .pdf - though PDF processing would require additional libraries).
+Each file can represent a piece of information or a document that your AI system can "read" and use.
