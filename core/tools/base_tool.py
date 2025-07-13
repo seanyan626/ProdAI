@@ -3,9 +3,11 @@
 import logging
 from abc import ABC, abstractmethod
 from typing import Any, Dict, Optional, Type, Union
-from pydantic import BaseModel, Field
+
+from pydantic import BaseModel
 
 logger = logging.getLogger(__name__)
+
 
 class ToolInputSchema(BaseModel):
     """
@@ -14,14 +16,15 @@ class ToolInputSchema(BaseModel):
     """
     pass
 
+
 class BaseTool(ABC):
     """
     Agent 可用工具的抽象基类。
     子类应定义工具的具体行为和输入模式。
     """
-    name: str = "base_tool" # 工具名称
-    description: str = "一个什么都不做的基础工具。" # 工具描述
-    args_schema: Optional[Type[BaseModel]] = ToolInputSchema # 输入模式的 Pydantic 模型
+    name: str = "base_tool"  # 工具名称
+    description: str = "一个什么都不做的基础工具。"  # 工具描述
+    args_schema: Optional[Type[BaseModel]] = ToolInputSchema  # 输入模式的 Pydantic 模型
 
     def __init__(self, **kwargs: Any):
         """
@@ -47,7 +50,6 @@ class BaseTool(ABC):
         # logger.warning(f"工具 '{self.name}' 未实现异步版本。如果通过 arun 调用，将回退到同步 _run。")
         # return self._run(**kwargs)
         pass
-
 
     def run(self, tool_input: Optional[Union[Dict[str, Any], BaseModel]] = None, **kwargs: Any) -> Any:
         """
@@ -75,7 +77,6 @@ class BaseTool(ABC):
         logger.info(f"调用工具 '{self.name}' 的 run 方法。输入（如果有）: {tool_input or kwargs}")
         return f"工具 '{self.name}' 的模拟同步执行结果。"
 
-
     async def arun(self, tool_input: Optional[Union[Dict[str, Any], BaseModel]] = None, **kwargs: Any) -> Any:
         """
         异步执行工具的公共方法。
@@ -91,7 +92,7 @@ class BaseTool(ABC):
         """
         # if self.args_schema:
         #     return self.args_schema.model_json_schema()
-        return None # 占位符
+        return None  # 占位符
 
     @classmethod
     def get_tool_info(cls) -> Dict[str, Any]:
@@ -111,12 +112,14 @@ class BaseTool(ABC):
         return {
             "name": cls.name,
             "description": cls.description,
-            "args_schema": None # 占位符
+            "args_schema": None  # 占位符
         }
+
 
 if __name__ == '__main__':
     from configs.config import load_config
     from configs.logging_config import setup_logging
+
     load_config()
     setup_logging()
     logger.info("BaseTool 模块可以直接运行测试（如果包含测试代码）。")

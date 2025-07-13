@@ -5,10 +5,11 @@ from typing import List, Optional, Any
 
 from langchain_openai import OpenAIEmbeddings
 
+from configs.config import OPENAI_API_KEY  # 假设 API 密钥从这里获取
 from .base_embedding_model import BaseEmbeddingModel
-from configs.config import OPENAI_API_KEY # 假设 API 密钥从这里获取
 
 logger = logging.getLogger(__name__)
+
 
 class OpenAIEmbeddingModel(BaseEmbeddingModel):
     """
@@ -16,10 +17,10 @@ class OpenAIEmbeddingModel(BaseEmbeddingModel):
     """
 
     def __init__(
-        self,
-        model_name: str = "text-embedding-ada-002", # OpenAI 推荐的默认模型
-        api_key: Optional[str] = OPENAI_API_KEY,
-        **kwargs: Any # 其他传递给 OpenAIEmbeddings 的参数
+            self,
+            model_name: str = "text-embedding-ada-002",  # OpenAI 推荐的默认模型
+            api_key: Optional[str] = OPENAI_API_KEY,
+            **kwargs: Any  # 其他传递给 OpenAIEmbeddings 的参数
     ):
         """
         初始化 OpenAI 嵌入模型。
@@ -29,7 +30,7 @@ class OpenAIEmbeddingModel(BaseEmbeddingModel):
             api_key (Optional[str]): OpenAI API 密钥。如果为 None，则尝试从配置中获取。
             **kwargs: 其他传递给 langchain_openai.OpenAIEmbeddings 的参数。
         """
-        super().__init__(model_name=model_name, **kwargs) # 将kwargs传递给基类存储在config中
+        super().__init__(model_name=model_name, **kwargs)  # 将kwargs传递给基类存储在config中
         self.api_key = api_key
         self.client: Optional[OpenAIEmbeddings] = None
         self._initialize_client()
@@ -43,9 +44,9 @@ class OpenAIEmbeddingModel(BaseEmbeddingModel):
             raise ValueError("OpenAI API 密钥缺失。")
         try:
             client_params = {
-                "model": self.model_name, # OpenAIEmbeddings 使用 'model' 而不是 'model_name'
+                "model": self.model_name,  # OpenAIEmbeddings 使用 'model' 而不是 'model_name'
                 "openai_api_key": self.api_key,
-                **(self.config.get("embedding_specific_kwargs") or {}) # 从config传入的额外参数
+                **(self.config.get("embedding_specific_kwargs") or {})  # 从config传入的额外参数
             }
             # 移除kwargs中可能与基类构造函数冲突或不被OpenAIEmbeddings直接接受的参数
             # 例如，如果基类也接受了 'temperature' 等不适用于 embedding 的参数
@@ -64,9 +65,9 @@ class OpenAIEmbeddingModel(BaseEmbeddingModel):
             # OpenAIEmbeddings 的参数包括： model, deployment (for Azure), openai_api_version, etc.
             # 我们将基类 kwargs 中不属于 BaseEmbeddingModel 定义的参数传递给 OpenAIEmbeddings
 
-            extra_lc_kwargs = self.config.copy() # 复制一份config
+            extra_lc_kwargs = self.config.copy()  # 复制一份config
             # 移除已在BaseEmbeddingModel中处理或OpenAIEmbeddingModel构造函数中显式使用的参数
-            extra_lc_kwargs.pop("model_name", None) # model_name 已用于 client_params["model"]
+            extra_lc_kwargs.pop("model_name", None)  # model_name 已用于 client_params["model"]
 
             final_client_params = {**client_params, **extra_lc_kwargs}
 
@@ -94,7 +95,7 @@ class OpenAIEmbeddingModel(BaseEmbeddingModel):
             logger.error(f"使用 OpenAIEmbeddings 为文档生成嵌入失败: {e}", exc_info=True)
             # 根据需要，可以返回空列表或重新引发自定义异常
             # raise EmbeddingGenerationError(f"Failed to embed documents: {e}") from e
-            return [[] for _ in texts] # 返回与输入文本数量相同的空列表，表示失败
+            return [[] for _ in texts]  # 返回与输入文本数量相同的空列表，表示失败
 
     async def aembed_documents(self, texts: List[str]) -> List[List[float]]:
         """
@@ -121,7 +122,7 @@ class OpenAIEmbeddingModel(BaseEmbeddingModel):
         if not self.client:
             logger.error("OpenAIEmbeddings 客户端未初始化。")
             raise RuntimeError("嵌入客户端未初始化。")
-        if not text: # 处理空字符串输入
+        if not text:  # 处理空字符串输入
             logger.warning("embed_query 接收到空文本输入，返回空嵌入。")
             return []
         try:
@@ -152,9 +153,10 @@ class OpenAIEmbeddingModel(BaseEmbeddingModel):
             logger.error(f"使用 OpenAIEmbeddings 异步为查询生成嵌入失败: {e}", exc_info=True)
             return []
 
+
 if __name__ == '__main__':
     import asyncio
-    from configs.config import load_config # OPENAI_API_KEY 从这里导入
+    from configs.config import load_config  # OPENAI_API_KEY 从这里导入
     from configs.logging_config import setup_logging
 
     load_config()
@@ -174,7 +176,7 @@ if __name__ == '__main__':
             query_embedding = embedding_model.embed_query(query_text)
             logger.info(f"查询 '{query_text}' 的嵌入向量 (前5个维度): {query_embedding[:5]}")
             assert isinstance(query_embedding, list)
-            assert len(query_embedding) > 0 # OpenAI embedding 通常是 1536 维
+            assert len(query_embedding) > 0  # OpenAI embedding 通常是 1536 维
             assert isinstance(query_embedding[0], float)
 
             # 测试 embed_documents
@@ -188,8 +190,9 @@ if __name__ == '__main__':
             assert isinstance(doc_embeddings, list)
             assert len(doc_embeddings) == len(doc_texts)
             assert isinstance(doc_embeddings[0], list)
-            assert len(doc_embeddings[0]) == len(query_embedding) # 所有嵌入应具有相同维度
+            assert len(doc_embeddings[0]) == len(query_embedding)  # 所有嵌入应具有相同维度
             assert isinstance(doc_embeddings[0][0], float)
+
 
             # 测试异步方法
             async def run_async_embedding_tests():
@@ -203,10 +206,11 @@ if __name__ == '__main__':
                 assert len(async_doc_embeddings) == len(doc_texts)
                 assert len(async_doc_embeddings[0]) == len(query_embedding)
 
+
             asyncio.run(run_async_embedding_tests())
             logger.info("异步嵌入测试完成。")
 
-        except ValueError as ve: # API Key 缺失等初始化错误
+        except ValueError as ve:  # API Key 缺失等初始化错误
             logger.error(f"OpenAIEmbeddingModel 初始化或配置错误: {ve}")
         except Exception as e:
             logger.error(f"执行 OpenAIEmbeddingModel 测试时发生意外错误: {e}", exc_info=True)

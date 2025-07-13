@@ -1,6 +1,7 @@
 # main.py
 # 项目主入口文件
 import logging
+
 from configs.config import load_config, APP_NAME
 from configs.logging_config import setup_logging
 
@@ -12,6 +13,7 @@ setup_logging()
 
 logger = logging.getLogger(__name__)
 
+
 def main():
     """
     运行 AI 项目的主函数。
@@ -22,7 +24,7 @@ def main():
     用户需要先在 core/ 目录下实现相关模块的具体逻辑后才能取消注释并运行。
     """
     logger.info(f"正在启动 {APP_NAME}...")
-    logger.info("这是一个骨架项目。请在 core/ 目录下的模块中添加您的代码实现。") # src -> core
+    logger.info("这是一个骨架项目。请在 core/ 目录下的模块中添加您的代码实现。")  # src -> core
 
     # 示例：初始化并运行一个 Agent (实际实现将取决于你的 Agent 设置)
     # try:
@@ -59,6 +61,7 @@ def main():
     #     logger.error(f"应用执行期间发生错误: {e}", exc_info=True)
 
     logger.info(f"{APP_NAME} (骨架) 已启动并结束。请添加您的实现。")
+
 
 if __name__ == "__main__":
     main()
