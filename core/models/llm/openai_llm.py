@@ -7,7 +7,7 @@ from langchain_core.messages import HumanMessage, AIMessage, SystemMessage, Base
 from langchain_openai import ChatOpenAI
 
 from .base_llm import BaseLLM
-from configs.config import OPENAI_API_KEY, DEFAULT_LLM_MODEL, DEFAULT_MAX_TOKENS, DEFAULT_TEMPERATURE, load_config
+from configs.config import OPENAI_API_KEY, OPENAI_API_BASE, DEFAULT_LLM_MODEL, DEFAULT_MAX_TOKENS, DEFAULT_TEMPERATURE, load_config
 
 load_config()
 
@@ -38,6 +38,7 @@ class OpenAILLM(BaseLLM):
         self,
         model_name: str = DEFAULT_LLM_MODEL,
         api_key: Optional[str] = OPENAI_API_KEY,
+        base_url: Optional[str] = OPENAI_API_BASE,
         temperature: Optional[float] = DEFAULT_TEMPERATURE,
         max_tokens: Optional[int] = DEFAULT_MAX_TOKENS,
         **kwargs: Any
@@ -45,6 +46,7 @@ class OpenAILLM(BaseLLM):
         all_kwargs = {
             "temperature": temperature,
             "max_tokens": max_tokens,
+            "base_url": base_url, # 将 base_url 也存入 config
             **kwargs
         }
         super().__init__(model_name=model_name, api_key=api_key, **all_kwargs)
@@ -60,13 +62,14 @@ class OpenAILLM(BaseLLM):
             client_params = {
                 "model_name": self.model_name,
                 "openai_api_key": self.api_key,
+                "base_url": self.config.get("base_url"), # 从 config 获取 base_url
                 "temperature": self.config.get("temperature", DEFAULT_TEMPERATURE),
                 "max_tokens": self.config.get("max_tokens", DEFAULT_MAX_TOKENS),
                 **(self.config.get("llm_specific_kwargs") or {})
             }
             client_params = {k: v for k, v in client_params.items() if v is not None}
             self.client = ChatOpenAI(**client_params)
-            logger.info(f"Langchain ChatOpenAI 客户端已为模型 {self.model_name} 初始化。")
+            logger.info(f"Langchain ChatOpenAI 客户端已为模型 {self.model_name} 初始化。Base URL: {self.config.get('base_url') or '默认'}")
         except Exception as e:
             logger.error(f"初始化 Langchain ChatOpenAI 客户端失败: {e}", exc_info=True)
             raise

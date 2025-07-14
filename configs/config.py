@@ -47,11 +47,22 @@ def load_config():
 
 # --- API 密钥和端点 ---
 # 在调用 load_config() 后加载它们
+# OpenAI
 OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
+OPENAI_API_BASE = os.getenv("OPENAI_API_BASE")
+
+# DashScope (通义千问)
 DASHSCOPE_API_KEY = os.getenv("DASHSCOPE_API_KEY")
-# PINECONE_API_KEY = os.getenv("PINECONE_API_KEY") # Pinecone API 密钥 (如果使用)
-# PINECONE_ENVIRONMENT = os.getenv("PINECONE_ENVIRONMENT") # Pinecone 环境 (如果使用)
-# ANTHROPIC_API_KEY = os.getenv("ANTHROPIC_API_KEY") # Anthropic API 密钥 (如果使用)
+DASHSCOPE_API_URL = os.getenv("DASHSCOPE_API_URL") # SDK通常不需要，但为保持一致性而读取
+
+# DeepSeek
+DEEPSEEK_API_KEY = os.getenv("DEEPSEEK_API_KEY")
+DEEPSEEK_API_URL = os.getenv("DEEPSEEK_API_URL")
+
+# 其他服务 (示例)
+# PINECONE_API_KEY = os.getenv("PINECONE_API_KEY")
+# PINECONE_ENVIRONMENT = os.getenv("PINECONE_ENVIRONMENT")
+# ANTHROPIC_API_KEY = os.getenv("ANTHROPIC_API_KEY")
 
 
 # --- LLM 设置 ---
@@ -93,11 +104,17 @@ LOG_FILE = os.getenv("LOG_FILE", None) # 日志输出文件路径 (例如 "app.l
 if __name__ == "__main__":
     # 这部分用于测试配置加载
     load_config()
+    print("--- 应用配置测试 ---")
     print(f"应用名称: {APP_NAME}")
-    print(f"OpenAI API 密钥: {'已加载' if OPENAI_API_KEY else '未找到'}")
-    print(f"DashScope API 密钥: {'已加载' if DASHSCOPE_API_KEY else '未找到'}")
     print(f"默认 LLM 模型: {DEFAULT_LLM_MODEL}")
     print(f"日志级别: {LOG_LEVEL}")
+    print("\n--- LLM API 配置加载状态 ---")
+    print(f"OpenAI API 密钥: {'已加载' if OPENAI_API_KEY else '未找到'}")
+    print(f"OpenAI API Base URL: {OPENAI_API_BASE or '未设置'}")
+    print(f"DashScope API 密钥: {'已加载' if DASHSCOPE_API_KEY else '未找到'}")
+    print(f"DashScope API URL: {DASHSCOPE_API_URL or '未设置'}")
+    print(f"DeepSeek API 密钥: {'已加载' if DEEPSEEK_API_KEY else '未找到'}")
+    print(f"DeepSeek API URL: {DEEPSEEK_API_URL or '未设置'}")
     # print(f"知识库路径: {KNOWLEDGE_BASE_PATH}") # 如果使用，取消注释
     # project_root_test = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
     # print(f"项目根目录 (推断): {project_root_test}")

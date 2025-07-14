@@ -8,7 +8,7 @@ import dashscope
 from dashscope.api_entities.dashscope_response import GenerationResponse
 
 from .base_llm import BaseLLM
-from configs.config import DASHSCOPE_API_KEY, load_config
+from configs.config import DASHSCOPE_API_KEY, DASHSCOPE_API_URL, load_config
 
 # 确保配置已加载
 load_config()
@@ -35,26 +35,35 @@ class DashScopeLLM(BaseLLM):
         self,
         model_name: str = "qwen-turbo", # 默认使用 qwen-turbo
         api_key: Optional[str] = DASHSCOPE_API_KEY,
+        base_url: Optional[str] = DASHSCOPE_API_URL,
         **kwargs: Any # 其他传递给 DashScope API 的参数
     ):
-        super().__init__(model_name=model_name, api_key=api_key, **kwargs)
+        all_kwargs = {"base_url": base_url, **kwargs}
+        super().__init__(model_name=model_name, api_key=api_key, **all_kwargs)
         self.client_initialized = False
         self._initialize_client()
 
     def _initialize_client(self) -> None:
         """
         初始化 DashScope API 客户端。
-        主要是设置 API Key。
+        主要是设置 API Key 和可选的 API Host。
         """
         if not self.api_key:
             logger.error("DashScope API 密钥 (DASHSCOPE_API_KEY) 未设置。")
             raise ValueError("DashScope API 密钥缺失。")
         try:
+            # 如果提供了 base_url，则通过环境变量设置它，因为 dashscope SDK 主要通过环境变量读取
+            base_url = self.config.get("base_url")
+            if base_url:
+                import os
+                os.environ['DASHSCOPE_API_HOST'] = base_url
+                logger.info(f"已将 DashScope API Host 设置为: {base_url}")
+
             dashscope.api_key = self.api_key
             self.client_initialized = True
             logger.info("DashScope API 密钥已设置。")
         except Exception as e:
-            logger.error(f"设置 DashScope API 密钥失败: {e}", exc_info=True)
+            logger.error(f"设置 DashScope 配置失败: {e}", exc_info=True)
             raise
 
     def generate(
