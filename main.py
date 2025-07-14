@@ -51,21 +51,21 @@ def main():
 
 
     # --- 测试 DashScope LLM ---
-    # try:
-    #     from core.models.llm.dashscope_llm import DashScopeLLM
-    #     from configs.config import DASHSCOPE_API_KEY
-    #     if DASHSCOPE_API_KEY and DASHSCOPE_API_KEY != "YOUR_DASHSCOPE_API_KEY_HERE":
-    #         logger.info("\n--- 正在测试 DashScopeLLM ---")
-    #         dashscope_llm = DashScopeLLM(model_name="qwen-turbo")
-    #         messages = [{"role": "user", "content": "你好，介绍一下你自己，说明你是哪个模型。"}]
-    #         response = dashscope_llm.chat(messages)
-    #         logger.info(f"DashScope LLM 响应: {response.get('content')}")
-    #     else:
-    #         logger.warning("未配置 DashScope API 密钥，跳过 DashScope LLM 测试。")
-    # except ImportError:
-    #     logger.warning("无法导入 DashScopeLLM，跳过测试。")
-    # except Exception as e:
-    #     logger.error(f"测试 DashScopeLLM 时出错: {e}", exc_info=True)
+    try:
+        from core.models.llm.dashscope_llm import DashScopeLLM
+        from configs.config import DASHSCOPE_API_KEY
+        if DASHSCOPE_API_KEY and DASHSCOPE_API_KEY != "YOUR_DASHSCOPE_API_KEY_HERE":
+            logger.info("\n--- 正在测试 DashScopeLLM ---")
+            dashscope_llm = DashScopeLLM(model_name="qwen-turbo")
+            messages = [{"role": "user", "content": "你好，介绍一下你自己，说明你是哪个模型。"}]
+            response = dashscope_llm.chat(messages)
+            logger.info(f"DashScope LLM 响应: {response.get('content')}")
+        else:
+            logger.warning("未配置 DashScope API 密钥，跳过 DashScope LLM 测试。")
+    except ImportError:
+        logger.warning("无法导入 DashScopeLLM，跳过测试。")
+    except Exception as e:
+        logger.error(f"测试 DashScopeLLM 时出错: {e}", exc_info=True)
 
 
     # --- 测试 DeepSeek LLM ---
