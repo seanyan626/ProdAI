@@ -16,10 +16,12 @@ def main():
     """
     运行 AI 项目的主函数。
     此文件包含用于直接测试各个模型实现的示例代码块。
+
     """
     logger.info(f"正在启动 {APP_NAME}...")
 
     # --- 模型直接调用测试 ---
+
     # 使用方法：
     # 1. 在 .env 文件中配置好您想测试的模型的 API Key (和 URL/BASE, 如果需要)。
     # 2. 取消下面对应模型测试代码块的注释。
@@ -27,6 +29,7 @@ def main():
     # 4. 建议一次只测试一个模型。
 
     # --- 测试 OpenAI LLM ---
+
     # try:
     #     from core.models.llm.openai_llm import OpenAILLM
     #     from configs.config import OPENAI_API_KEY
@@ -39,9 +42,12 @@ def main():
     #     else:
     #         logger.warning("未配置 OpenAI API 密钥，跳过 OpenAI LLM 测试。")
     # except ImportError:
+
     #     logger.warning("无法导入 OpenAILLM，跳过测试。")
+
     # except Exception as e:
     #     logger.error(f"测试 OpenAILLM 时出错: {e}", exc_info=True)
+
 
 
     # --- 测试 DashScope LLM ---
@@ -63,6 +69,7 @@ def main():
 
 
     # --- 测试 DeepSeek LLM ---
+
     # try:
     #     from core.models.llm.deepseek_llm import DeepSeekLLM
     #     from configs.config import DEEPSEEK_API_KEY
@@ -75,9 +82,12 @@ def main():
     #     else:
     #         logger.warning("未配置 DeepSeek API 密钥，跳过 DeepSeek LLM 测试。")
     # except ImportError:
+
     #     logger.warning("无法导入 DeepSeekLLM，跳过测试。")
+
     # except Exception as e:
     #     logger.error(f"测试 DeepSeekLLM 时出错: {e}", exc_info=True)
+
 
 
     # --- 测试 OpenAI Embedding 模型 ---
@@ -100,6 +110,7 @@ def main():
 
 
     logger.info(f"{APP_NAME} 运行结束。")
+
 
 if __name__ == "__main__":
     main()
