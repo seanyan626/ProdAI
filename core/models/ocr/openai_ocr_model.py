@@ -1,11 +1,12 @@
 # core/models/ocr/openai_ocr_model.py
 # OpenAI 标准的 OCR 模型实现骨架
 import logging
-from typing import Union, List, Dict, Any, Optional
+from typing import Union, Any, Optional
 
-from .base_ocr_model import BaseOCRModel, OCRResult # 假设 OCRResult 在 base_ocr_model.py 中定义
+from .base_ocr_model import BaseOCRModel, OCRResult  # 假设 OCRResult 在 base_ocr_model.py 中定义
 
 logger = logging.getLogger(__name__)
+
 
 class OpenAIOCRModel(BaseOCRModel):
     """
@@ -59,6 +60,7 @@ class OpenAIOCRModel(BaseOCRModel):
         # 以下为占位符：
         return OCRResult(full_text="[OpenAI OCR 异步功能待实现]", segments=[])
 
+
 if __name__ == '__main__':
     from configs.config import load_config
     from configs.logging_config import setup_logging
@@ -85,16 +87,19 @@ if __name__ == '__main__':
     result_bytes = ocr_model_skeleton.recognize_text(dummy_image_bytes)
     logger.info(f"字节识别结果 (骨架): {result_bytes.full_text}")
 
+
     # 异步调用示例 (骨架)
     async def main_async():
         logger.info("\n--- 测试异步 OCR (骨架) ---")
         async_result = await ocr_model_skeleton.arecognize_text(dummy_image_path)
         logger.info(f"异步路径识别结果 (骨架): {async_result.full_text}")
 
+
     import asyncio
+
     if hasattr(asyncio, 'run'):
         asyncio.run(main_async())
-    else: # for Python < 3.7
+    else:  # for Python < 3.7
         loop = asyncio.get_event_loop()
         loop.run_until_complete(main_async())
 

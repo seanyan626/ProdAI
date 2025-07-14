@@ -6,13 +6,14 @@ from typing import Any, Dict, List, Optional
 from langchain_core.messages import HumanMessage, AIMessage, SystemMessage, BaseMessage
 from langchain_openai import ChatOpenAI
 
-from .base_llm import BaseLLM
 from configs.config import DEEPSEEK_API_KEY, DEEPSEEK_API_URL, load_config
+from .base_llm import BaseLLM
 
 # 确保配置已加载
 load_config()
 
 logger = logging.getLogger(__name__)
+
 
 def _convert_dict_messages_to_langchain(messages: List[Dict[str, str]]) -> List[BaseMessage]:
     """将字典格式的消息列表转换为 Langchain BaseMessage 对象列表。"""
@@ -31,19 +32,21 @@ def _convert_dict_messages_to_langchain(messages: List[Dict[str, str]]) -> List[
             lc_messages.append(HumanMessage(content=content))
     return lc_messages
 
+
 class DeepSeekLLM(BaseLLM):
     """
     使用 Langchain 封装 DeepSeek LLM。
     由于 DeepSeek API 与 OpenAI API 兼容，我们复用 ChatOpenAI 客户端。
     """
+
     def __init__(
-        self,
-        model_name: str = "deepseek-chat",
-        api_key: Optional[str] = DEEPSEEK_API_KEY,
-        base_url: Optional[str] = DEEPSEEK_API_URL,
-        temperature: Optional[float] = 0.7,
-        max_tokens: Optional[int] = 2048,
-        **kwargs: Any
+            self,
+            model_name: str = "deepseek-chat",
+            api_key: Optional[str] = DEEPSEEK_API_KEY,
+            base_url: Optional[str] = DEEPSEEK_API_URL,
+            temperature: Optional[float] = 0.7,
+            max_tokens: Optional[int] = 2048,
+            **kwargs: Any
     ):
         all_kwargs = {
             "temperature": temperature,
@@ -64,24 +67,25 @@ class DeepSeekLLM(BaseLLM):
             client_params = {
                 "model_name": self.model_name,
                 "openai_api_key": self.api_key,
-                "openai_api_base": self.config.get("base_url"), # Langchain 使用 openai_api_base
+                "openai_api_base": self.config.get("base_url"),  # Langchain 使用 openai_api_base
                 "temperature": self.config.get("temperature"),
                 "max_tokens": self.config.get("max_tokens"),
                 **(self.config.get("llm_specific_kwargs") or {})
             }
             client_params = {k: v for k, v in client_params.items() if v is not None}
             self.client = ChatOpenAI(**client_params)
-            logger.info(f"Langchain ChatOpenAI (用于 DeepSeek) 客户端已为模型 {self.model_name} 初始化。Base URL: {self.config.get('base_url') or '默认'}")
+            logger.info(
+                f"Langchain ChatOpenAI (用于 DeepSeek) 客户端已为模型 {self.model_name} 初始化。Base URL: {self.config.get('base_url') or '默认'}")
         except Exception as e:
             logger.error(f"初始化 Langchain ChatOpenAI (用于 DeepSeek) 客户端失败: {e}", exc_info=True)
             raise
 
     def _get_configured_client(
-        self,
-        max_tokens_runtime: Optional[int] = None,
-        temperature_runtime: Optional[float] = None,
-        stop_sequences_runtime: Optional[List[str]] = None,
-        **kwargs_runtime: Any
+            self,
+            max_tokens_runtime: Optional[int] = None,
+            temperature_runtime: Optional[float] = None,
+            stop_sequences_runtime: Optional[List[str]] = None,
+            **kwargs_runtime: Any
     ) -> ChatOpenAI:
         if not self.client:
             raise RuntimeError("LLM 客户端未初始化。")
@@ -90,7 +94,7 @@ class DeepSeekLLM(BaseLLM):
         if stop_sequences_runtime:
             binding_kwargs["stop"] = stop_sequences_runtime
         if max_tokens_runtime is not None:
-             binding_kwargs["max_tokens"] = max_tokens_runtime
+            binding_kwargs["max_tokens"] = max_tokens_runtime
 
         if kwargs_runtime:
             binding_kwargs.update(kwargs_runtime)
@@ -103,12 +107,12 @@ class DeepSeekLLM(BaseLLM):
         return self.client
 
     def generate(
-        self,
-        prompt: str,
-        max_tokens: Optional[int] = None,
-        temperature: Optional[float] = None,
-        stop_sequences: Optional[List[str]] = None,
-        **kwargs: Any
+            self,
+            prompt: str,
+            max_tokens: Optional[int] = None,
+            temperature: Optional[float] = None,
+            stop_sequences: Optional[List[str]] = None,
+            **kwargs: Any
     ) -> str:
 
         configured_client = self._get_configured_client(max_tokens, temperature, stop_sequences, **kwargs)
@@ -116,81 +120,85 @@ class DeepSeekLLM(BaseLLM):
 
         try:
             response_message = configured_client.invoke(lc_messages)
-            return response_message.content.strip() if isinstance(response_message.content, str) else str(response_message.content)
+            return response_message.content.strip() if isinstance(response_message.content, str) else str(
+                response_message.content)
         except Exception as e:
             logger.error(f"DeepSeek LLM generate 调用失败: {e}", exc_info=True)
             return f"错误：LLM 生成失败 - {e}"
 
     async def agenerate(
-        self,
-        prompt: str,
-        max_tokens: Optional[int] = None,
-        temperature: Optional[float] = None,
-        stop_sequences: Optional[List[str]] = None,
-        **kwargs: Any
+            self,
+            prompt: str,
+            max_tokens: Optional[int] = None,
+            temperature: Optional[float] = None,
+            stop_sequences: Optional[List[str]] = None,
+            **kwargs: Any
     ) -> str:
         configured_client = self._get_configured_client(max_tokens, temperature, stop_sequences, **kwargs)
         lc_messages = [HumanMessage(content=prompt)]
 
         try:
             response_message = await configured_client.ainvoke(lc_messages)
-            return response_message.content.strip() if isinstance(response_message.content, str) else str(response_message.content)
+            return response_message.content.strip() if isinstance(response_message.content, str) else str(
+                response_message.content)
         except Exception as e:
             logger.error(f"DeepSeek LLM agenerate 调用失败: {e}", exc_info=True)
             return f"错误：LLM 异步生成失败 - {e}"
 
     def chat(
-        self,
-        messages: List[Dict[str, str]],
-        max_tokens: Optional[int] = None,
-        temperature: Optional[float] = None,
-        stop_sequences: Optional[List[str]] = None,
-        **kwargs: Any
+            self,
+            messages: List[Dict[str, str]],
+            max_tokens: Optional[int] = None,
+            temperature: Optional[float] = None,
+            stop_sequences: Optional[List[str]] = None,
+            **kwargs: Any
     ) -> Dict[str, Any]:
         configured_client = self._get_configured_client(max_tokens, temperature, stop_sequences, **kwargs)
         lc_messages = _convert_dict_messages_to_langchain(messages)
 
         try:
             response_message = configured_client.invoke(lc_messages)
-            content_str = response_message.content.strip() if isinstance(response_message.content, str) else str(response_message.content)
+            content_str = response_message.content.strip() if isinstance(response_message.content, str) else str(
+                response_message.content)
 
             return_dict = {"role": "assistant", "content": content_str}
             if hasattr(response_message, 'response_metadata') and response_message.response_metadata:
                 return_dict["metadata"] = response_message.response_metadata
                 if "token_usage" in response_message.response_metadata:
-                     return_dict["token_usage"] = response_message.response_metadata["token_usage"]
+                    return_dict["token_usage"] = response_message.response_metadata["token_usage"]
             return return_dict
         except Exception as e:
             logger.error(f"DeepSeek LLM chat 调用失败: {e}", exc_info=True)
             return {"role": "assistant", "content": f"错误：LLM 聊天失败 - {e}", "error": str(e)}
 
     async def achat(
-        self,
-        messages: List[Dict[str, str]],
-        max_tokens: Optional[int] = None,
-        temperature: Optional[float] = None,
-        stop_sequences: Optional[List[str]] = None,
-        **kwargs: Any
+            self,
+            messages: List[Dict[str, str]],
+            max_tokens: Optional[int] = None,
+            temperature: Optional[float] = None,
+            stop_sequences: Optional[List[str]] = None,
+            **kwargs: Any
     ) -> Dict[str, Any]:
         configured_client = self._get_configured_client(max_tokens, temperature, stop_sequences, **kwargs)
         lc_messages = _convert_dict_messages_to_langchain(messages)
 
         try:
             response_message = await configured_client.ainvoke(lc_messages)
-            content_str = response_message.content.strip() if isinstance(response_message.content, str) else str(response_message.content)
+            content_str = response_message.content.strip() if isinstance(response_message.content, str) else str(
+                response_message.content)
 
             return_dict = {"role": "assistant", "content": content_str}
             if hasattr(response_message, 'response_metadata') and response_message.response_metadata:
                 return_dict["metadata"] = response_message.response_metadata
                 if "token_usage" in response_message.response_metadata:
-                     return_dict["token_usage"] = response_message.response_metadata["token_usage"]
+                    return_dict["token_usage"] = response_message.response_metadata["token_usage"]
             return return_dict
         except Exception as e:
             logger.error(f"DeepSeek LLM achat 调用失败: {e}", exc_info=True)
             return {"role": "assistant", "content": f"错误：LLM 异步聊天失败 - {e}", "error": str(e)}
 
+
 if __name__ == '__main__':
-    import asyncio
     from configs.logging_config import setup_logging
 
     setup_logging()

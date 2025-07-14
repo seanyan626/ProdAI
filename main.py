@@ -1,6 +1,7 @@
 # main.py
 # 项目主入口文件
 import logging
+
 from configs.config import load_config, APP_NAME
 from configs.logging_config import setup_logging
 
@@ -11,6 +12,7 @@ load_config()
 setup_logging()
 
 logger = logging.getLogger(__name__)
+
 
 def main():
     """
@@ -48,8 +50,6 @@ def main():
     # except Exception as e:
     #     logger.error(f"测试 OpenAILLM 时出错: {e}", exc_info=True)
 
-
-
     # --- 测试 DashScope LLM ---
     try:
         from core.models.llm.dashscope_llm import DashScopeLLM
@@ -66,7 +66,6 @@ def main():
         logger.warning("无法导入 DashScopeLLM，跳过测试。")
     except Exception as e:
         logger.error(f"测试 DashScopeLLM 时出错: {e}", exc_info=True)
-
 
     # --- 测试 DeepSeek LLM ---
 
@@ -88,8 +87,6 @@ def main():
     # except Exception as e:
     #     logger.error(f"测试 DeepSeekLLM 时出错: {e}", exc_info=True)
 
-
-
     # --- 测试 OpenAI Embedding 模型 ---
     # try:
     #     from core.models.embedding.openai_embedding_model import OpenAIEmbeddingModel
@@ -107,7 +104,6 @@ def main():
     #     logger.warning("无法导入 OpenAIEmbeddingModel，跳过测试。")
     # except Exception as e:
     #     logger.error(f"测试 OpenAIEmbeddingModel 时出错: {e}", exc_info=True)
-
 
     logger.info(f"{APP_NAME} 运行结束。")
 

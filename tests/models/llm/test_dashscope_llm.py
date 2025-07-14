@@ -1,12 +1,14 @@
 # tests/models/llm/test_dashscope_llm.py
 # DashScopeLLM 类的单元测试 (基于 Langchain 封装)
-import pytest
 import logging
 from unittest.mock import MagicMock, patch
+
+import pytest
 
 try:
     from configs.config import load_config, DASHSCOPE_API_KEY
     from configs.logging_config import setup_logging
+
     load_config()
     setup_logging()
 except ImportError:
@@ -17,6 +19,7 @@ from langchain_openai import ChatOpenAI
 from langchain_core.messages import AIMessage
 
 logger = logging.getLogger(__name__)
+
 
 # --- 模拟 ChatOpenAI ---
 @pytest.fixture
@@ -31,6 +34,7 @@ def mock_chat_openai_for_dashscope():
 
     with patch('langchain_openai.ChatOpenAI', return_value=mock_client) as patched_constructor:
         yield patched_constructor, mock_client
+
 
 # --- DashScopeLLM 初始化测试 ---
 def test_dashscopellm_initialization_success(mock_chat_openai_for_dashscope):
@@ -54,15 +58,18 @@ def test_dashscopellm_initialization_success(mock_chat_openai_for_dashscope):
 
     logger.info("DashScopeLLM (Langchain版) 初始化成功测试通过。")
 
+
 def test_dashscopellm_initialization_no_apikey_raises_valueerror():
     logger.info("测试 DashScopeLLM (Langchain版) 初始化时缺少 API 密钥...")
     with patch('configs.config.DASHSCOPE_API_KEY', None):
-         with pytest.raises(ValueError, match="DashScope API 密钥缺失"):
+        with pytest.raises(ValueError, match="DashScope API 密钥缺失"):
             DashScopeLLM(api_key=None)
     logger.info("缺少 API 密钥时正确引发 ValueError。")
 
+
 # --- DashScopeLLM 方法测试 ---
-@pytest.mark.skipif(not DASHSCOPE_API_KEY or DASHSCOPE_API_KEY == "YOUR_DASHSCOPE_API_KEY_HERE", reason="部分模拟测试可能仍需有效配置结构")
+@pytest.mark.skipif(not DASHSCOPE_API_KEY or DASHSCOPE_API_KEY == "YOUR_DASHSCOPE_API_KEY_HERE",
+                    reason="部分模拟测试可能仍需有效配置结构")
 def test_dashscopellm_chat_method(mock_chat_openai_for_dashscope):
     logger.info("测试 DashScopeLLM (Langchain版) chat 方法...")
     _, mock_client = mock_chat_openai_for_dashscope
@@ -78,7 +85,9 @@ def test_dashscopellm_chat_method(mock_chat_openai_for_dashscope):
     assert response["content"] == "模拟的DashScope响应内容"
     logger.info("DashScopeLLM (Langchain版) chat 方法测试通过。")
 
-@pytest.mark.skipif(not DASHSCOPE_API_KEY or DASHSCOPE_API_KEY == "YOUR_DASHSCOPE_API_KEY_HERE", reason="部分模拟测试可能仍需有效配置结构")
+
+@pytest.mark.skipif(not DASHSCOPE_API_KEY or DASHSCOPE_API_KEY == "YOUR_DASHSCOPE_API_KEY_HERE",
+                    reason="部分模拟测试可能仍需有效配置结构")
 def test_dashscopellm_generate_method(mock_chat_openai_for_dashscope):
     logger.info("测试 DashScopeLLM (Langchain版) generate 方法...")
     _, mock_client = mock_chat_openai_for_dashscope
@@ -92,5 +101,6 @@ def test_dashscopellm_generate_method(mock_chat_openai_for_dashscope):
     mock_client.invoke.assert_called_once()
     assert response_content == "模拟的DashScope响应内容(无绑定)"
     logger.info("DashScopeLLM (Langchain版) generate 方法测试通过。")
+
 
 logger.info("DashScopeLLM 的单元测试文件已更新为 Langchain 版本。")

@@ -1,12 +1,14 @@
 # tests/models/llm/test_deepseek_llm.py
 # DeepSeekLLM 类的单元测试
-import pytest
 import logging
 from unittest.mock import MagicMock, patch
+
+import pytest
 
 try:
     from configs.config import load_config, DEEPSEEK_API_KEY
     from configs.logging_config import setup_logging
+
     load_config()
     setup_logging()
 except ImportError:
@@ -16,6 +18,7 @@ from core.models.llm.deepseek_llm import DeepSeekLLM
 from langchain_openai import ChatOpenAI
 
 logger = logging.getLogger(__name__)
+
 
 # --- 模拟 ChatOpenAI ---
 @pytest.fixture
@@ -30,6 +33,7 @@ def mock_chat_openai_for_deepseek():
 
     with patch('langchain_openai.ChatOpenAI', return_value=mock_client) as patched_constructor:
         yield patched_constructor, mock_client
+
 
 # --- DeepSeekLLM 初始化测试 ---
 def test_deepseekllm_initialization_success(mock_chat_openai_for_deepseek):
@@ -56,15 +60,18 @@ def test_deepseekllm_initialization_success(mock_chat_openai_for_deepseek):
 
     logger.info("DeepSeekLLM 初始化成功测试通过。")
 
+
 def test_deepseekllm_initialization_no_apikey_raises_valueerror():
     logger.info("测试 DeepSeekLLM 初始化时缺少 API 密钥是否引发 ValueError...")
     with patch('configs.config.DEEPSEEK_API_KEY', None):
-         with pytest.raises(ValueError, match="DeepSeek API 密钥缺失"):
+        with pytest.raises(ValueError, match="DeepSeek API 密钥缺失"):
             DeepSeekLLM(api_key=None)
     logger.info("缺少 API 密钥时正确引发 ValueError。")
 
+
 # --- DeepSeekLLM 方法测试 ---
-@pytest.mark.skipif(not DEEPSEEK_API_KEY or DEEPSEEK_API_KEY == "YOUR_DEEPSEEK_API_KEY_HERE", reason="部分模拟测试可能仍需有效配置结构")
+@pytest.mark.skipif(not DEEPSEEK_API_KEY or DEEPSEEK_API_KEY == "YOUR_DEEPSEEK_API_KEY_HERE",
+                    reason="部分模拟测试可能仍需有效配置结构")
 def test_deepseekllm_chat_method(mock_chat_openai_for_deepseek):
     logger.info("测试 DeepSeekLLM chat 方法...")
     _, mock_client = mock_chat_openai_for_deepseek
@@ -81,5 +88,6 @@ def test_deepseekllm_chat_method(mock_chat_openai_for_deepseek):
 
     assert response["content"] == "模拟的DeepSeek响应"
     logger.info("DeepSeekLLM chat 方法测试通过。")
+
 
 logger.info("DeepSeekLLM 的单元测试文件创建完毕。")

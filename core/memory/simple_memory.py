@@ -7,6 +7,7 @@ from .base_memory import BaseMemory
 
 logger = logging.getLogger(__name__)
 
+
 class SimpleMemory(BaseMemory):
     """
     一个简单的内存存储，用于对话历史。
@@ -30,7 +31,6 @@ class SimpleMemory(BaseMemory):
     def _prepend_system_message(self):
         """内部方法，用于添加或确保系统消息位于开头。"""
         pass
-
 
     def add_message(self, message: Union[str, Dict[str, Any]], role: Optional[str] = None) -> None:
         """
@@ -74,7 +74,7 @@ class SimpleMemory(BaseMemory):
         #     output_history.insert(0, system_msg)
         # logger.debug(f"从 SimpleMemory 检索到 {len(output_history)} 条消息。")
         # return output_history
-        return [] # 返回空列表作为占位符
+        return []  # 返回空列表作为占位符
 
     def clear(self) -> None:
         """
@@ -101,6 +101,7 @@ class SimpleMemory(BaseMemory):
 if __name__ == '__main__':
     from configs.config import load_config
     from configs.logging_config import setup_logging
+
     load_config()
     setup_logging()
     logger.info("SimpleMemory 模块可以直接运行测试（如果包含测试代码）。")

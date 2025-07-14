@@ -2,12 +2,13 @@
 # 提示管理器模块
 import logging
 import os
-from typing import Dict, Any, Optional, List
 from string import Template
+from typing import Dict, Any, Optional, List
 
-DEFAULT_TEMPLATES_DIR = os.path.join(os.path.dirname(__file__), "templates") # 默认模板目录
+DEFAULT_TEMPLATES_DIR = os.path.join(os.path.dirname(__file__), "templates")  # 默认模板目录
 
 logger = logging.getLogger(__name__)
+
 
 class PromptTemplate(Template):
     """
@@ -33,7 +34,7 @@ class PromptManager:
                                            默认为此文件旁边的 "templates" 子目录。
         """
         self.templates_dir = templates_dir or DEFAULT_TEMPLATES_DIR
-        self.loaded_templates: Dict[str, PromptTemplate] = {} # 已加载的模板
+        self.loaded_templates: Dict[str, PromptTemplate] = {}  # 已加载的模板
         # self._load_all_templates() # 实际加载逻辑待补充
         logger.info(f"PromptManager 已初始化。模板目录: {self.templates_dir}")
 
@@ -52,7 +53,6 @@ class PromptManager:
         """
         pass
 
-
     def get_template(self, template_name: str) -> Optional[PromptTemplate]:
         """
         检索已加载的提示模板。
@@ -62,7 +62,7 @@ class PromptManager:
         # if not template:
         #     logger.warning(f"模板 '{template_name}' 未找到。")
         # return template
-        return None # 占位符
+        return None  # 占位符
 
     def format_prompt(self, template_name: str, **kwargs: Any) -> Optional[str]:
         """
@@ -82,18 +82,20 @@ class PromptManager:
         # except Exception as e:
         #     logger.error(f"格式化模板 '{template_name}' 出错: {e}", exc_info=True)
         #     return None
-        return None # 占位符
+        return None  # 占位符
 
     def list_available_templates(self) -> List[str]:
         """
         返回所有已加载模板的名称列表。
         （实现待补充）
         """
-        return [] # 占位符
+        return []  # 占位符
+
 
 if __name__ == '__main__':
     from configs.config import load_config
     from configs.logging_config import setup_logging
+
     load_config()
     setup_logging()
     logger.info("PromptManager 模块可以直接运行测试（如果包含测试代码）。")

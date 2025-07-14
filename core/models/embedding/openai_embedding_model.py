@@ -5,12 +5,13 @@ from typing import List, Optional, Any
 
 from langchain_openai import OpenAIEmbeddings
 
-from .base_embedding_model import BaseEmbeddingModel
 from configs.config import OPENAI_API_KEY, OPENAI_API_BASE, load_config
+from .base_embedding_model import BaseEmbeddingModel
 
 load_config()
 
 logger = logging.getLogger(__name__)
+
 
 class OpenAIEmbeddingModel(BaseEmbeddingModel):
     """
@@ -18,11 +19,11 @@ class OpenAIEmbeddingModel(BaseEmbeddingModel):
     """
 
     def __init__(
-        self,
-        model_name: str = "text-embedding-ada-002",
-        api_key: Optional[str] = OPENAI_API_KEY,
-        base_url: Optional[str] = OPENAI_API_BASE,
-        **kwargs: Any
+            self,
+            model_name: str = "text-embedding-ada-002",
+            api_key: Optional[str] = OPENAI_API_KEY,
+            base_url: Optional[str] = OPENAI_API_BASE,
+            **kwargs: Any
     ):
         """
         初始化 OpenAI 嵌入模型。
@@ -125,6 +126,7 @@ class OpenAIEmbeddingModel(BaseEmbeddingModel):
             logger.error(f"使用 OpenAIEmbeddings 异步为查询生成嵌入失败: {e}", exc_info=True)
             return []
 
+
 if __name__ == '__main__':
     import asyncio
     from configs.logging_config import setup_logging
@@ -149,6 +151,7 @@ if __name__ == '__main__':
             logger.info(f"为 {len(doc_texts)} 个文档生成的嵌入向量 (第一个文档的前5个维度): {doc_embeddings[0][:5]}")
             assert isinstance(doc_embeddings, list) and len(doc_embeddings) == len(doc_texts)
 
+
             async def run_async_embedding_tests():
                 logger.info("\n--- 测试异步嵌入方法 ---")
                 async_query_embedding = await embedding_model.aembed_query(query_text + " (异步)")
@@ -158,6 +161,7 @@ if __name__ == '__main__':
                 async_doc_embeddings = await embedding_model.aembed_documents([d + " (异步)" for d in doc_texts])
                 logger.info(f"异步文档嵌入 (第一个文档的前5个维度): {async_doc_embeddings[0][:5]}")
                 assert len(async_doc_embeddings) == len(doc_texts)
+
 
             asyncio.run(run_async_embedding_tests())
             logger.info("异步嵌入测试完成。")

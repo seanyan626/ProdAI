@@ -1,14 +1,14 @@
 # examples/run_agent_example.py
 # 运行 Agent 的示例脚本
-import logging
 import json
+import logging
 
 # 根据你的实际项目结构和配置/日志设置的位置调整导入
 # 这里假设 'configs' 和 'core' 是同级目录，或者 Python 路径已正确设置。
 try:
     from configs.config import load_config, OPENAI_API_KEY
     from configs.logging_config import setup_logging
-    from core.models.llm.openai_llm import OpenAILLM # 更新路径和类名
+    from core.models.llm.openai_llm import OpenAILLM  # 更新路径和类名
     from core.agents.specific_agent import SpecificAgent
     from core.tools.search_tool import SearchTool
     from core.memory.simple_memory import SimpleMemory
@@ -22,9 +22,10 @@ except ImportError as e:
 # --- 设置 ---
 # 加载 .env 文件变量并配置日志
 load_config()
-setup_logging() # 尽早调用
+setup_logging()  # 尽早调用
 
 logger = logging.getLogger("run_agent_example_脚本")
+
 
 def run_example():
     """
@@ -36,15 +37,15 @@ def run_example():
     if not OPENAI_API_KEY or OPENAI_API_KEY == "YOUR_API_KEY_HERE":
         logger.error("OpenAI API 密钥未在 .env 文件中配置或仍为占位符。")
         logger.error("请在 .env 文件中设置你的 OPENAI_API_KEY 以便运行此示例。")
-        return # 对于需要API密钥的真实LLM调用，这里应该返回
+        return  # 对于需要API密钥的真实LLM调用，这里应该返回
 
     # 1. 初始化组件
-    agent = None # 初始化 agent 变量
+    agent = None  # 初始化 agent 变量
     try:
         logger.info("尝试初始化组件...")
         # 注意：OpenAILLM 现在内部使用 langchain
-        llm = OpenAILLM(model_name="gpt-3.5-turbo", temperature=0.1) # <--- 已更改类名回 OpenAILLM
-        logger.info(f"LLM ({getattr(llm, 'model_name', '未知模型')}) 初始化完成。") # <--- "语言模型" -> "LLM"
+        llm = OpenAILLM(model_name="gpt-3.5-turbo", temperature=0.1)  # <--- 已更改类名回 OpenAILLM
+        logger.info(f"LLM ({getattr(llm, 'model_name', '未知模型')}) 初始化完成。")  # <--- "语言模型" -> "LLM"
 
         search_tool = SearchTool()
         tools = [search_tool]
@@ -69,18 +70,18 @@ def run_example():
         return
 
     # 2. 为 Agent 定义一个查询
-    query = "日本的首都是哪里？以及它当前的人口大约是多少（请通过网络搜索）？" # 更明确地指示使用搜索
+    query = "日本的首都是哪里？以及它当前的人口大约是多少（请通过网络搜索）？"  # 更明确地指示使用搜索
     logger.info(f"定义查询: \"{query}\"")
 
     # 3. 运行 Agent
     final_result = None
-    if agent: # 确保 agent 已成功初始化
+    if agent:  # 确保 agent 已成功初始化
         logger.info(f"正在使用 Agent ({agent.__class__.__name__}) 运行查询...")
         try:
             final_result = agent.run(query)
         except Exception as e:
             logger.error(f"运行 Agent 时发生错误: {e}", exc_info=True)
-            final_result = {"error": f"Agent 运行失败: {e}"} # 设置错误结果以便后续处理
+            final_result = {"error": f"Agent 运行失败: {e}"}  # 设置错误结果以便后续处理
     else:
         logger.error("Agent 未能成功初始化，无法运行查询。")
         final_result = {"error": "Agent 初始化失败。"}
@@ -102,16 +103,16 @@ def run_example():
         elif "error" in final_result:
             logger.warning(f"\nAgent 完成但出现错误: {final_result['error']}")
 
-        agent_log = final_result.get("log") # AgentFinish 可能包含log
+        agent_log = final_result.get("log")  # AgentFinish 可能包含log
         if agent_log:
-             logger.info(f"\nAgent 最终日志/思考:\n{agent_log}")
+            logger.info(f"\nAgent 最终日志/思考:\n{agent_log}")
 
     if agent and hasattr(agent, 'memory'):
         logger.info("\n--- 来自 Agent 内存的对话历史 ---")
         history = agent.memory.get_history()
         if history:
             for i, msg in enumerate(history):
-                logger.info(f"{i+1}. 角色: {msg.get('role')}, 内容: {str(msg.get('content'))[:150]}...")
+                logger.info(f"{i + 1}. 角色: {msg.get('role')}, 内容: {str(msg.get('content'))[:150]}...")
         else:
             logger.info("内存中没有历史记录。")
 

@@ -1,5 +1,6 @@
-import os
 import logging
+import os
+
 from dotenv import load_dotenv
 
 # --- 应用元数据 ---
@@ -28,7 +29,8 @@ LOG_LEVEL: str = "INFO"
 LOG_FORMAT: str = "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
 LOG_FILE: str = None
 
-_ENV_LOADED = False # 标记环境变量是否已加载
+_ENV_LOADED = False  # 标记环境变量是否已加载
+
 
 def load_config():
     """

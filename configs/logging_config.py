@@ -1,6 +1,8 @@
 import logging
 import sys
+
 from .config import LOG_LEVEL, LOG_FORMAT, LOG_FILE, APP_NAME
+
 
 def setup_logging():
     """
@@ -30,7 +32,7 @@ def setup_logging():
     # 文件处理器 (可选)
     if LOG_FILE:
         try:
-            file_handler = logging.FileHandler(LOG_FILE, mode='a') # 'a' 表示追加
+            file_handler = logging.FileHandler(LOG_FILE, mode='a')  # 'a' 表示追加
             file_handler.setFormatter(formatter)
             logger.addHandler(file_handler)
             logging.info(f"日志将记录到文件: {LOG_FILE}")
@@ -43,6 +45,7 @@ def setup_logging():
 
     logging.info(f"应用 {APP_NAME} 的日志记录已初始化，级别为 {LOG_LEVEL}。")
 
+
 if __name__ == "__main__":
     # 这部分用于测试日志设置
     # 它需要 config.py 能够加载 LOG_LEVEL 等。
@@ -51,6 +54,7 @@ if __name__ == "__main__":
 
     # 首先，确保加载配置 (因为 setup_logging 依赖它)
     from .config import load_config
+
     load_config()
 
     # 现在设置日志记录
@@ -65,7 +69,7 @@ if __name__ == "__main__":
     root_logger.critical("这是一条严重错误信息。")
 
     # 测试来自特定模块的日志记录
-    module_logger = logging.getLogger("my_module") # 测试模块日志
+    module_logger = logging.getLogger("my_module")  # 测试模块日志
     module_logger.info("来自 my_module 的普通信息。")
 
     if LOG_FILE:
