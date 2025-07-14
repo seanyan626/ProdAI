@@ -99,6 +99,24 @@ def main():
     #     logger.error(f"测试 DashScopeLLM 时出错: {e}", exc_info=True)
 
 
+    # --- 测试 DeepSeek 模型 ---
+    # try:
+    #     from core.models.llm.deepseek_llm import DeepSeekLLM
+    #     from configs.config import DEEPSEEK_API_KEY
+    #     if DEEPSEEK_API_KEY and DEEPSEEK_API_KEY != "YOUR_DEEPSEEK_API_KEY_HERE":
+    #         logger.info("\n--- 正在测试 DeepSeekLLM ---")
+    #         deepseek_llm = DeepSeekLLM()
+    #         messages = [{"role": "user", "content": "你好，请用中文介绍一下你自己，说明你是哪个公司的模型。"}]
+    #         response = deepseek_llm.chat(messages)
+    #         logger.info(f"DeepSeek LLM 响应: {response.get('content')}")
+    #     else:
+    #         logger.warning("未配置 DeepSeek API 密钥，跳过 DeepSeek LLM 测试。")
+    # except ImportError:
+    #     logger.warning("无法导入 DeepSeekLLM，跳过测试。请确保该模块已实现。")
+    # except Exception as e:
+    #     logger.error(f"测试 DeepSeekLLM 时出错: {e}", exc_info=True)
+
+
     logger.info(f"{APP_NAME} (骨架) 已启动并结束。请添加您的实现。")
 
 if __name__ == "__main__":
