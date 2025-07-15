@@ -52,7 +52,7 @@ def main():
 
     # --- 测试 DashScope LLM ---
     try:
-        from core.models.llm.dashscope_llm import DashScopeLLM
+        from core.models.llm.langchain.dashscope_llm import DashScopeLLM
         from configs.config import DASHSCOPE_API_KEY
         if DASHSCOPE_API_KEY and DASHSCOPE_API_KEY != "YOUR_DASHSCOPE_API_KEY_HERE":
             logger.info("\n--- 正在测试 DashScopeLLM ---")
@@ -70,7 +70,7 @@ def main():
     # --- 测试 DeepSeek LLM ---
 
     try:
-        from core.models.llm.deepseek_llm import DeepSeekLLM
+        from core.models.llm.langchain.deepseek_llm import DeepSeekLLM
         from configs.config import DEEPSEEK_API_KEY
         if DEEPSEEK_API_KEY and DEEPSEEK_API_KEY != "YOUR_DEEPSEEK_API_KEY_HERE":
             logger.info("\n--- 正在测试 DeepSeekLLM ---")
@@ -89,7 +89,7 @@ def main():
 
     # --- 测试 LangChain Embedding 模型 ---
     try:
-        from core.models.embedding.openai import OpenAIEmbedding
+        from core.models.embedding.langchain.openai import OpenAIEmbedding
         from configs.config import OPENAI_API_KEY, OPENAI_EMBEDDING_MODEL_NAME
 
         if OPENAI_API_KEY and OPENAI_API_KEY != "YOUR_OPENAI_KEY_HERE":
@@ -102,7 +102,7 @@ def main():
             logger.info(f"OpenAI (LangChain) aquery '{query_text}' 的嵌入向量 (前5维): {vector[:5]}")
 
             # 测试 DashScope
-            from core.models.embedding.dashscope import DashScopeEmbedding
+            from core.models.embedding.langchain.dashscope import DashScopeEmbedding
             from configs.config import DASHSCOPE_API_KEY, DASHSCOPE_EMBEDDING_MODEL_NAME
 
             if DASHSCOPE_API_KEY and DASHSCOPE_API_KEY != "YOUR_DASHSCOPE_API_KEY_HERE":
@@ -123,7 +123,7 @@ def main():
 
     # --- 测试 LlamaIndex Embedding 模型 ---
     try:
-        from core.models.embedding.openai import OpenAIEmbedding
+        from core.models.embedding.langchain.openai import OpenAIEmbedding
         from configs.config import OPENAI_API_KEY, OPENAI_EMBEDDING_MODEL_NAME
 
         if OPENAI_API_KEY and OPENAI_API_KEY != "YOUR_OPENAI_KEY_HERE":
@@ -136,7 +136,7 @@ def main():
             logger.info(f"OpenAI (LlamaIndex) query '{query_text}' 的嵌入向量 (前5维): {vector[:5]}")
 
             # 测试 DashScope
-            from core.models.embedding.dashscope import DashScopeEmbedding
+            from core.models.embedding.langchain.dashscope import DashScopeEmbedding
             from configs.config import DASHSCOPE_API_KEY, DASHSCOPE_EMBEDDING_MODEL_NAME
 
             if DASHSCOPE_API_KEY and DASHSCOPE_API_KEY != "YOUR_DASHSCOPE_API_KEY_HERE":

@@ -17,7 +17,7 @@ except ImportError:
     print("警告: 无法为测试导入配置/日志模块。这可能会影响模块行为。")
 
 # from core.agents.specific_agent import SpecificAgent # 具体 Agent 实现待补充
-from core.models.llm.base_llm import BaseLLM  # <--- 更新路径和类名
+from core.models.llm.langchain.base_llm import BaseLLM  # <--- 更新路径和类名
 from core.tools.base_tool import BaseTool, ToolInputSchema  # 'src' -> 'core'
 from core.memory.simple_memory import SimpleMemory  # 'src' -> 'core'
 from core.prompts.prompt_manager import PromptManager  # 'src' -> 'core'

@@ -14,7 +14,7 @@ try:
 except ImportError:
     print("警告: 无法为测试导入配置/日志模块。")
 
-from core.models.embedding.openai_embedding_model import OpenAIEmbeddingModel
+from core.models.embedding.langchain.openai_embedding_model import OpenAIEmbeddingModel
 from langchain_openai import OpenAIEmbeddings  # 用于模拟
 
 logger = logging.getLogger(__name__)

@@ -14,7 +14,7 @@ try:
 except ImportError:
     print("警告: 无法为测试导入配置/日志模块。")
 
-from core.models.llm.deepseek_llm import DeepSeekLLM
+from core.models.llm.langchain.deepseek_llm import DeepSeekLLM
 from langchain_openai import ChatOpenAI
 
 logger = logging.getLogger(__name__)

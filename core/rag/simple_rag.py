@@ -3,7 +3,7 @@
 import logging
 from typing import List, Dict, Any, Optional
 
-from core.models.llm.base_llm import BaseLLM  # 更新路径和类名
+from core.models.llm.langchain.base_llm import BaseLLM  # 更新路径和类名
 from core.prompts.prompt_manager import PromptManager
 from .base_retriever import BaseRetriever, Document
 

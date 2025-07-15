@@ -3,7 +3,7 @@
 import logging
 from typing import Any, List, Dict, Optional, Union
 
-from core.models.llm.base_llm import BaseLLM  # 更新路径和类名
+from core.models.llm.langchain.base_llm import BaseLLM  # 更新路径和类名
 from core.prompts.prompt_manager import PromptManager
 from core.tools.base_tool import BaseTool
 from .base_agent import BaseAgent, AgentAction, AgentFinish
