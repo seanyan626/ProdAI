@@ -3,9 +3,7 @@ import logging
 from abc import abstractmethod
 from typing import List
 
-
 from llama_index.core.base.embeddings.base import BaseEmbedding
-
 
 logger = logging.getLogger(__name__)
 
