@@ -11,8 +11,10 @@ APP_VERSION = "0.1.0"
 # API 密钥和端点
 OPENAI_API_KEY: str = None
 OPENAI_API_BASE: str = None
+DASHSCOPE_MODEL_NAME: str = None
 DASHSCOPE_API_KEY: str = None
 DASHSCOPE_API_URL: str = None
+DEEPSEEK_MODEL_NAME: str = None
 DEEPSEEK_API_KEY: str = None
 DEEPSEEK_API_URL: str = None
 
@@ -60,8 +62,10 @@ def load_config():
     # API 密钥和端点
     g['OPENAI_API_KEY'] = os.getenv("OPENAI_API_KEY")
     g['OPENAI_API_BASE'] = os.getenv("OPENAI_API_BASE")
+    g['DASHSCOPE_MODEL_NAME'] = os.getenv("DASHSCOPE_MODEL_NAME")
     g['DASHSCOPE_API_KEY'] = os.getenv("DASHSCOPE_API_KEY")
     g['DASHSCOPE_API_URL'] = os.getenv("DASHSCOPE_API_URL")
+    g['DEEPSEEK_MODEL_NAME'] = os.getenv("DEEPSEEK_MODEL_NAME")
     g['DEEPSEEK_API_KEY'] = os.getenv("DEEPSEEK_API_KEY")
     g['DEEPSEEK_API_URL'] = os.getenv("DEEPSEEK_API_URL")
 
@@ -99,8 +103,10 @@ if __name__ == "__main__":
     print("\n--- LLM API 配置加载状态 ---")
     print(f"OpenAI API 密钥: {'已加载' if OPENAI_API_KEY else '未找到'}")
     print(f"OpenAI API Base URL: {OPENAI_API_BASE or '未设置'}")
+    print(f"DashScope MODEL NAME: {DASHSCOPE_MODEL_NAME or '未设置'}")
     print(f"DashScope API 密钥: {'已加载' if DASHSCOPE_API_KEY else '未找到'}")
     print(f"DashScope API URL: {DASHSCOPE_API_URL or '未设置'}")
+    print(f"DeepSeek MODEL NAME: {DEEPSEEK_MODEL_NAME or '未设置'}")
     print(f"DeepSeek API 密钥: {'已加载' if DEEPSEEK_API_KEY else '未找到'}")
     print(f"DeepSeek API URL: {DEEPSEEK_API_URL or '未设置'}")
 

@@ -56,7 +56,7 @@ def main():
         from configs.config import DASHSCOPE_API_KEY
         if DASHSCOPE_API_KEY and DASHSCOPE_API_KEY != "YOUR_DASHSCOPE_API_KEY_HERE":
             logger.info("\n--- 正在测试 DashScopeLLM ---")
-            dashscope_llm = DashScopeLLM(model_name="qwen-turbo")
+            dashscope_llm = DashScopeLLM()
             messages = [{"role": "user", "content": "你好，介绍一下你自己，说明你是哪个模型。"}]
             response = dashscope_llm.chat(messages)
             logger.info(f"DashScope LLM 响应: {response.get('content')}")
@@ -69,23 +69,23 @@ def main():
 
     # --- 测试 DeepSeek LLM ---
 
-    # try:
-    #     from core.models.llm.deepseek_llm import DeepSeekLLM
-    #     from configs.config import DEEPSEEK_API_KEY
-    #     if DEEPSEEK_API_KEY and DEEPSEEK_API_KEY != "YOUR_DEEPSEEK_API_KEY_HERE":
-    #         logger.info("\n--- 正在测试 DeepSeekLLM ---")
-    #         deepseek_llm = DeepSeekLLM()
-    #         messages = [{"role": "user", "content": "你好，请用中文介绍一下你自己，说明你是哪个公司的模型。"}]
-    #         response = deepseek_llm.chat(messages)
-    #         logger.info(f"DeepSeek LLM 响应: {response.get('content')}")
-    #     else:
-    #         logger.warning("未配置 DeepSeek API 密钥，跳过 DeepSeek LLM 测试。")
-    # except ImportError:
+    try:
+        from core.models.llm.deepseek_llm import DeepSeekLLM
+        from configs.config import DEEPSEEK_API_KEY
+        if DEEPSEEK_API_KEY and DEEPSEEK_API_KEY != "YOUR_DEEPSEEK_API_KEY_HERE":
+            logger.info("\n--- 正在测试 DeepSeekLLM ---")
+            deepseek_llm = DeepSeekLLM()
+            messages = [{"role": "user", "content": "你好，请用中文介绍一下你自己，说明你是哪个公司的模型。"}]
+            response = deepseek_llm.chat(messages)
+            logger.info(f"DeepSeek LLM 响应: {response.get('content')}")
+        else:
+            logger.warning("未配置 DeepSeek API 密钥，跳过 DeepSeek LLM 测试。")
+    except ImportError:
 
-    #     logger.warning("无法导入 DeepSeekLLM，跳过测试。")
+        logger.warning("无法导入 DeepSeekLLM，跳过测试。")
 
-    # except Exception as e:
-    #     logger.error(f"测试 DeepSeekLLM 时出错: {e}", exc_info=True)
+    except Exception as e:
+        logger.error(f"测试 DeepSeekLLM 时出错: {e}", exc_info=True)
 
     # --- 测试 OpenAI Embedding 模型 ---
     # try:

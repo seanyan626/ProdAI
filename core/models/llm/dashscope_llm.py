@@ -6,7 +6,7 @@ from typing import Any, Dict, List, Optional
 from langchain_core.messages import HumanMessage, AIMessage, SystemMessage, BaseMessage
 from langchain_openai import ChatOpenAI
 
-from configs.config import DASHSCOPE_API_KEY, DASHSCOPE_API_URL, load_config
+from configs.config import DASHSCOPE_MODEL_NAME, DASHSCOPE_API_KEY, DASHSCOPE_API_URL, load_config
 from .base_llm import BaseLLM
 
 # 确保配置已加载
@@ -41,7 +41,7 @@ class DashScopeLLM(BaseLLM):
 
     def __init__(
             self,
-            model_name: str = "qwen-turbo",
+            model_name: Optional[str] = DASHSCOPE_MODEL_NAME,
             api_key: Optional[str] = DASHSCOPE_API_KEY,
             base_url: Optional[str] = DASHSCOPE_API_URL,
             temperature: Optional[float] = 0.7,

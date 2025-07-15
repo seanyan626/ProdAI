@@ -6,7 +6,7 @@ from typing import Any, Dict, List, Optional
 from langchain_core.messages import HumanMessage, AIMessage, SystemMessage, BaseMessage
 from langchain_openai import ChatOpenAI
 
-from configs.config import DEEPSEEK_API_KEY, DEEPSEEK_API_URL, load_config
+from configs.config import DEEPSEEK_MODEL_NAME, DEEPSEEK_API_KEY, DEEPSEEK_API_URL, load_config
 from .base_llm import BaseLLM
 
 # 确保配置已加载
@@ -41,7 +41,7 @@ class DeepSeekLLM(BaseLLM):
 
     def __init__(
             self,
-            model_name: str = "deepseek-chat",
+            model_name: Optional[str] = DEEPSEEK_MODEL_NAME,
             api_key: Optional[str] = DEEPSEEK_API_KEY,
             base_url: Optional[str] = DEEPSEEK_API_URL,
             temperature: Optional[float] = 0.7,
