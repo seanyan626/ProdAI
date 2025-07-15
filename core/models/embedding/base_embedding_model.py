@@ -3,13 +3,16 @@
 import logging
 from abc import ABC, abstractmethod
 from typing import List
+from langchain_core.embeddings import Embeddings
 
 logger = logging.getLogger(__name__)
 
 
-class BaseEmbeddingModel(ABC):
+class BaseEmbeddingModel(Embeddings, ABC):
     """
     文本嵌入模型的抽象基类。
+    该类继承自 `langchain_core.embeddings.Embeddings`，
+    以确保与 LangChain 生态系统的兼容性。
     子类应实现与特定嵌入服务或库交互的具体逻辑。
     """
 
@@ -21,8 +24,8 @@ class BaseEmbeddingModel(ABC):
             model_name (str): 要使用的嵌入模型的名称。
             **kwargs: 其他特定于模型的配置参数。
         """
+        super().__init__(**kwargs)
         self.model_name = model_name
-        self.config = kwargs
         logger.info(f"嵌入模型基类 '{self.__class__.__name__}' 使用模型 '{model_name}' 初始化。")
 
     @abstractmethod
@@ -40,36 +43,10 @@ class BaseEmbeddingModel(ABC):
         pass
 
     @abstractmethod
-    async def aembed_documents(self, texts: List[str]) -> List[List[float]]:
-        """
-        异步为一批文档（文本列表）生成嵌入向量。
-
-        参数:
-            texts (List[str]): 需要转换为嵌入向量的文本列表。
-
-        返回:
-            List[List[float]]: 每个输入文本对应的嵌入向量列表。
-        """
-        pass
-
-    @abstractmethod
     def embed_query(self, text: str) -> List[float]:
         """
         为单个查询文本生成嵌入向量。
         通常用于相似性搜索中的查询向量化。
-
-        参数:
-            text (str): 需要转换为嵌入向量的查询文本。
-
-        返回:
-            List[float]: 查询文本对应的嵌入向量。
-        """
-        pass
-
-    @abstractmethod
-    async def aembed_query(self, text: str) -> List[float]:
-        """
-        异步为单个查询文本生成嵌入向量。
 
         参数:
             text (str): 需要转换为嵌入向量的查询文本。
@@ -85,7 +62,6 @@ class BaseEmbeddingModel(ABC):
         """
         return {
             "model_name": self.model_name,
-            "config": self.config,
             "type": "EmbeddingModel"
         }
 

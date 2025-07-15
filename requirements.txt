@@ -10,7 +10,7 @@ langchain-openai
 dashscope
 
 # For RAG (example, choose your preferred libraries)
-# llama-index
+llama-index
 # faiss-cpu  # or faiss-gpu
 # sentence-transformers
 
