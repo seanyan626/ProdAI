@@ -87,23 +87,72 @@ def main():
     except Exception as e:
         logger.error(f"测试 DeepSeekLLM 时出错: {e}", exc_info=True)
 
-    # --- 测试 OpenAI Embedding 模型 ---
-    # try:
-    #     from core.models.embedding.openai_embedding_model import OpenAIEmbeddingModel
-    #     from configs.config import OPENAI_API_KEY
-    #     if OPENAI_API_KEY and OPENAI_API_KEY != "YOUR_OPENAI_KEY_HERE":
-    #         logger.info("\n--- 正在测试 OpenAIEmbeddingModel ---")
-    #         embedding_model = OpenAIEmbeddingModel()
-    #         query_text = "这是一个用于测试嵌入的查询"
-    #         embedding_vector = embedding_model.embed_query(query_text)
-    #         logger.info(f"查询 '{query_text}' 的嵌入向量 (前5维): {embedding_vector[:5]}")
-    #         logger.info(f"向量维度: {len(embedding_vector)}")
-    #     else:
-    #         logger.warning("未配置 OpenAI API 密钥，跳过 OpenAI Embedding 模型测试。")
-    # except ImportError:
-    #     logger.warning("无法导入 OpenAIEmbeddingModel，跳过测试。")
-    # except Exception as e:
-    #     logger.error(f"测试 OpenAIEmbeddingModel 时出错: {e}", exc_info=True)
+    # --- 测试 LangChain Embedding 模型 ---
+    try:
+        from core.models.embedding.openai import OpenAIEmbedding
+        from configs.config import OPENAI_API_KEY, OPENAI_EMBEDDING_MODEL_NAME
+
+        if OPENAI_API_KEY and OPENAI_API_KEY != "YOUR_OPENAI_KEY_HERE":
+            logger.info("\n--- 正在测试 LangChain Embedding ---")
+
+            # 测试 OpenAI
+            openai_embed = OpenAIEmbedding(framework="langchain", model_name=OPENAI_EMBEDDING_MODEL_NAME)
+            query_text = "Hello, LangChain!"
+            vector = openai_embed.embed_query(query_text)
+            logger.info(f"OpenAI (LangChain) aquery '{query_text}' 的嵌入向量 (前5维): {vector[:5]}")
+
+            # 测试 DashScope
+            from core.models.embedding.dashscope import DashScopeEmbedding
+            from configs.config import DASHSCOPE_API_KEY, DASHSCOPE_EMBEDDING_MODEL_NAME
+
+            if DASHSCOPE_API_KEY and DASHSCOPE_API_KEY != "YOUR_DASHSCOPE_API_KEY_HERE":
+                dashscope_embed = DashScopeEmbedding(framework="langchain", model_name=DASHSCOPE_EMBEDDING_MODEL_NAME)
+                query_text = "你好，LangChain！"
+                vector = dashscope_embed.embed_query(query_text)
+                logger.info(f"DashScope (LangChain) query '{query_text}' 的嵌入向量 (前5维): {vector[:5]}")
+            else:
+                logger.warning("未配置 DashScope API 密钥，跳过 DashScope (LangChain) Embedding 测试。")
+        else:
+            logger.warning("未配置 OpenAI API 密钥，跳过 LangChain Embedding 测试。")
+
+    except ImportError as e:
+        logger.warning(f"无法导入 Embedding 模型 ({e})，跳过测试。")
+    except Exception as e:
+        logger.error(f"测试 LangChain Embedding 时出错: {e}", exc_info=True)
+
+
+    # --- 测试 LlamaIndex Embedding 模型 ---
+    try:
+        from core.models.embedding.openai import OpenAIEmbedding
+        from configs.config import OPENAI_API_KEY, OPENAI_EMBEDDING_MODEL_NAME
+
+        if OPENAI_API_KEY and OPENAI_API_KEY != "YOUR_OPENAI_KEY_HERE":
+            logger.info("\n--- 正在测试 LlamaIndex Embedding ---")
+
+            # 测试 OpenAI
+            openai_embed = OpenAIEmbedding(framework="llama_index", model_name=OPENAI_EMBEDDING_MODEL_NAME)
+            query_text = "Hello, LlamaIndex!"
+            vector = openai_embed._get_query_embedding(query_text)
+            logger.info(f"OpenAI (LlamaIndex) query '{query_text}' 的嵌入向量 (前5维): {vector[:5]}")
+
+            # 测试 DashScope
+            from core.models.embedding.dashscope import DashScopeEmbedding
+            from configs.config import DASHSCOPE_API_KEY, DASHSCOPE_EMBEDDING_MODEL_NAME
+
+            if DASHSCOPE_API_KEY and DASHSCOPE_API_KEY != "YOUR_DASHSCOPE_API_KEY_HERE":
+                dashscope_embed = DashScopeEmbedding(framework="llama_index", model_name=DASHSCOPE_EMBEDDING_MODEL_NAME)
+                query_text = "你好，LlamaIndex！"
+                vector = dashscope_embed._get_query_embedding(query_text)
+                logger.info(f"DashScope (LlamaIndex) query '{query_text}' 的嵌入向量 (前5维): {vector[:5]}")
+            else:
+                logger.warning("未配置 DashScope API 密钥，跳过 DashScope (LlamaIndex) Embedding 测试。")
+        else:
+            logger.warning("未配置 OpenAI API 密钥，跳过 LlamaIndex Embedding 测试。")
+
+    except ImportError as e:
+        logger.warning(f"无法导入 Embedding 模型 ({e})，跳过测试。")
+    except Exception as e:
+        logger.error(f"测试 LlamaIndex Embedding 时出错: {e}", exc_info=True)
 
     logger.info(f"{APP_NAME} 运行结束。")
 
