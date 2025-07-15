@@ -1,0 +1,14 @@
+这是一个默认的提示模板。
+你可以使用像 $variable_name 这样的变量。
+
+当前任务: $task_description
+输入数据: $input_data
+
+请根据以上信息提供回复。
+如果上下文可用，请使用它: $context
+
+用户的问题: $user_question
+助手的角色设定: $assistant_persona
+
+请逐步思考。
+提供你的答案:
