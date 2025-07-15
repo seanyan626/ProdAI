@@ -3,7 +3,9 @@ import logging
 from typing import List, Optional
 
 from dashscope import TextEmbedding
-from dashscope.api_entities.dashscope_response import TextEmbeddingResponse
+
+from dashscope.api_entities.dashscope_response import DashScopeAPIResponse
+
 
 from .langchain_embedding import BaseLangChainEmbeddingModel
 from .llama_index_embedding import BaseLlamaIndexEmbeddingModel
@@ -42,7 +44,9 @@ class DashScopeEmbedding(BaseLangChainEmbeddingModel, BaseLlamaIndexEmbeddingMod
         logger.info(f"DashScopeEmbedding for {framework} initialized with model '{model_name}'.")
 
     def _call_embedding_api(self, texts: List[str]) -> List[List[float]]:
-        response: TextEmbeddingResponse = TextEmbedding.call(
+
+        response: DashScopeAPIResponse = TextEmbedding.call(
+
             model=self.model_name,
             input=texts,
             api_key=self.api_key,
