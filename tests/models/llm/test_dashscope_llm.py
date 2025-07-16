@@ -14,7 +14,7 @@ try:
 except ImportError:
     print("警告: 无法为测试导入配置/日志模块。")
 
-from core.models.llm.dashscope_llm import DashScopeLLM
+from core.models.llm.langchain.dashscope_llm import DashScopeLLM
 from langchain_openai import ChatOpenAI
 from langchain_core.messages import AIMessage
 

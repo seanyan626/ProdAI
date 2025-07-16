@@ -14,7 +14,7 @@ try:
 except ImportError:
     print("警告: 无法为测试导入配置/日志模块。")
 
-from core.models.llm.openai_llm import OpenAILLM, _convert_dict_messages_to_langchain
+from core.models.llm import OpenAILLM, _convert_dict_messages_to_langchain
 from langchain_core.messages import HumanMessage, AIMessage, SystemMessage
 from langchain_openai import ChatOpenAI
 

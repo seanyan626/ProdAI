@@ -8,7 +8,7 @@ import logging
 try:
     from configs.config import load_config, OPENAI_API_KEY
     from configs.logging_config import setup_logging
-    from core.models.llm.openai_llm import OpenAILLM  # 更新路径和类名
+    from core.models.llm import OpenAILLM  # 更新路径和类名
     from core.agents.specific_agent import SpecificAgent
     from core.tools.search_tool import SearchTool
     from core.memory.simple_memory import SimpleMemory
