@@ -23,6 +23,10 @@ DEFAULT_LLM_MODEL: str = "gpt-3.5-turbo"
 DEFAULT_MAX_TOKENS: int = 1500
 DEFAULT_TEMPERATURE: float = 0.7
 
+# Embedding 模型设置
+OPENAI_EMBEDDING_MODEL_NAME: str = "text-embedding-ada-002"
+DASHSCOPE_EMBEDDING_MODEL_NAME: str = "text-embedding-v1"
+
 # Agent 设置
 MAX_ITERATIONS: int = 10
 
@@ -73,6 +77,10 @@ def load_config():
     g['DEFAULT_LLM_MODEL'] = os.getenv("DEFAULT_LLM_MODEL", "gpt-3.5-turbo")
     g['DEFAULT_MAX_TOKENS'] = int(os.getenv("DEFAULT_MAX_TOKENS", "1500"))
     g['DEFAULT_TEMPERATURE'] = float(os.getenv("DEFAULT_TEMPERATURE", "0.7"))
+
+    # Embedding 模型设置
+    g['OPENAI_EMBEDDING_MODEL_NAME'] = os.getenv("OPENAI_EMBEDDING_MODEL_NAME", "text-embedding-ada-002")
+    g['DASHSCOPE_EMBEDDING_MODEL_NAME'] = os.getenv("DASHSCOPE_EMBEDDING_MODEL_NAME", "text-embedding-v1")
 
     # Agent 设置
     g['MAX_ITERATIONS'] = int(os.getenv("MAX_ITERATIONS", "10"))
