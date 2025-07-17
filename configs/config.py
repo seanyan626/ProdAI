@@ -30,6 +30,19 @@ DASHSCOPE_EMBEDDING_MODEL_NAME: str = "text-embedding-v1"
 # Agent 设置
 MAX_ITERATIONS: int = 10
 
+# OCR 模型设置
+DEFAULT_OCR_MODEL: str = "openai_vision"
+OCR_MAX_RETRIES: int = 3
+OCR_TIMEOUT: int = 30
+ALIYUN_OCR_API_KEY: str = None
+BAIDU_OCR_API_KEY: str = None
+BAIDU_OCR_SECRET_KEY: str = None
+TENCENT_OCR_SECRET_ID: str = None
+TENCENT_OCR_SECRET_KEY: str = None
+GOOGLE_VISION_API_KEY: str = None
+AZURE_VISION_API_KEY: str = None
+AZURE_VISION_ENDPOINT: str = None
+
 # 日志配置
 LOG_LEVEL: str = "INFO"
 LOG_FORMAT: str = "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
@@ -85,6 +98,19 @@ def load_config():
     # Agent 设置
     g['MAX_ITERATIONS'] = int(os.getenv("MAX_ITERATIONS", "10"))
 
+    # OCR 模型设置
+    g['DEFAULT_OCR_MODEL'] = os.getenv("DEFAULT_OCR_MODEL", "openai_vision")
+    g['OCR_MAX_RETRIES'] = int(os.getenv("OCR_MAX_RETRIES", "3"))
+    g['OCR_TIMEOUT'] = int(os.getenv("OCR_TIMEOUT", "30"))
+    g['ALIYUN_OCR_API_KEY'] = os.getenv("ALIYUN_OCR_API_KEY")
+    g['BAIDU_OCR_API_KEY'] = os.getenv("BAIDU_OCR_API_KEY")
+    g['BAIDU_OCR_SECRET_KEY'] = os.getenv("BAIDU_OCR_SECRET_KEY")
+    g['TENCENT_OCR_SECRET_ID'] = os.getenv("TENCENT_OCR_SECRET_ID")
+    g['TENCENT_OCR_SECRET_KEY'] = os.getenv("TENCENT_OCR_SECRET_KEY")
+    g['GOOGLE_VISION_API_KEY'] = os.getenv("GOOGLE_VISION_API_KEY")
+    g['AZURE_VISION_API_KEY'] = os.getenv("AZURE_VISION_API_KEY")
+    g['AZURE_VISION_ENDPOINT'] = os.getenv("AZURE_VISION_ENDPOINT")
+
     # 日志配置
     g['LOG_LEVEL'] = os.getenv("LOG_LEVEL", "INFO").upper()
     g['LOG_FORMAT'] = os.getenv("LOG_FORMAT", "%(asctime)s - %(name)s - %(levelname)s - %(message)s")
@@ -117,6 +143,15 @@ if __name__ == "__main__":
     print(f"DeepSeek MODEL NAME: {DEEPSEEK_MODEL_NAME or '未设置'}")
     print(f"DeepSeek API 密钥: {'已加载' if DEEPSEEK_API_KEY else '未找到'}")
     print(f"DeepSeek API URL: {DEEPSEEK_API_URL or '未设置'}")
+    
+    print("\n--- OCR 配置加载状态 ---")
+    print(f"默认OCR模型: {DEFAULT_OCR_MODEL}")
+    print(f"OCR最大重试次数: {OCR_MAX_RETRIES}")
+    print(f"OCR超时时间: {OCR_TIMEOUT}秒")
+    print(f"阿里云OCR API密钥: {'已加载' if ALIYUN_OCR_API_KEY else '未找到'}")
+    print(f"百度OCR API密钥: {'已加载' if BAIDU_OCR_API_KEY else '未找到'}")
+    print(f"Google Vision API密钥: {'已加载' if GOOGLE_VISION_API_KEY else '未找到'}")
+    print(f"Azure Vision API密钥: {'已加载' if AZURE_VISION_API_KEY else '未找到'}")
 
     # 4. 再次调用，应该不会重复加载
     print("\n--- 尝试重复加载 ---")

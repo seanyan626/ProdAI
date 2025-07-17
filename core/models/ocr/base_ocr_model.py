@@ -1,24 +1,32 @@
 # core/models/ocr/base_ocr_model.py
 # OCR (光学字符识别) 模型的抽象基类
+import asyncio
 import logging
+import time
 from abc import ABC, abstractmethod
-from typing import Union, List, Dict, Any  # 引入 List, Dict, Any 用于更结构化的输出
+from typing import Union, List, Dict, Any, Optional
 
 logger = logging.getLogger(__name__)
+
+
+class OCRError(Exception):
+    """OCR基础异常"""
+    pass
 
 
 class OCRResult:
     """
     用于封装OCR识别结果的数据类。
-    可以根据需要扩展，例如包含每个文本块的置信度、位置信息等。
+    包含完整文本、文本段信息和置信度等详细信息。
     """
 
-    def __init__(self, full_text: str, segments: Optional[List[Dict[str, Any]]] = None):
+    def __init__(self, full_text: str, segments: Optional[List[Dict[str, Any]]] = None, confidence: float = 0.0):
         self.full_text: str = full_text  # 识别出的完整文本
-        self.segments: List[Dict[str, Any]] = segments or []  # 可选的文本段列表，每个段可以包含 'text', 'confidence', 'bbox' 等信息
+        self.segments: List[Dict[str, Any]] = segments or []  # 文本段列表，每个段包含 'text', 'confidence', 'bbox' 等信息
+        self.confidence: float = confidence  # 整体置信度
 
     def __repr__(self):
-        return f"OCRResult(full_text='{self.full_text[:100]}...', segments_count={len(self.segments)})"
+        return f"OCRResult(full_text='{self.full_text[:100]}...', segments_count={len(self.segments)}, confidence={self.confidence})"
 
 
 class BaseOCRModel(ABC):
@@ -27,15 +35,19 @@ class BaseOCRModel(ABC):
     子类应实现与特定 OCR 引擎或服务交互的具体逻辑。
     """
 
-    def __init__(self, model_name: Optional[str] = None, **kwargs):
+    def __init__(self, model_name: Optional[str] = None, max_retries: int = 3, timeout: int = 30, **kwargs):
         """
         初始化 OCR 模型。
 
         参数:
             model_name (Optional[str]): 要使用的 OCR 模型的名称或标识。
+            max_retries (int): 最大重试次数。
+            timeout (int): 请求超时时间（秒）。
             **kwargs: 其他特定于模型的配置参数。
         """
         self.model_name = model_name or "default_ocr"
+        self.max_retries = max_retries
+        self.timeout = timeout
         self.config = kwargs
         logger.info(f"OCR模型基类 '{self.__class__.__name__}' 使用模型 '{self.model_name}' 初始化。")
 
@@ -67,12 +79,87 @@ class BaseOCRModel(ABC):
         """
         pass
 
+    def _retry_with_backoff(self, func, *args, **kwargs):
+        """
+        带有指数退避的重试机制。
+
+        参数:
+            func: 要重试的函数
+            *args: 函数的位置参数
+            **kwargs: 函数的关键字参数
+
+        返回:
+            函数的返回值
+
+        抛出:
+            OCRError: 当所有重试都失败时
+        """
+        last_exception = None
+        
+        for attempt in range(self.max_retries + 1):
+            try:
+                return func(*args, **kwargs)
+            except Exception as e:
+                last_exception = e
+                if attempt < self.max_retries:
+                    wait_time = 2 ** attempt  # 指数退避: 1s, 2s, 4s, ...
+                    logger.warning(f"OCR调用失败 (尝试 {attempt + 1}/{self.max_retries + 1}): {str(e)}. {wait_time}秒后重试...")
+                    time.sleep(wait_time)
+                else:
+                    logger.error(f"OCR调用在 {self.max_retries + 1} 次尝试后仍然失败: {str(e)}")
+        
+        raise OCRError(f"OCR识别失败，已重试 {self.max_retries} 次: {str(last_exception)}")
+
+    async def _async_retry_with_backoff(self, func, *args, **kwargs):
+        """
+        异步版本的带有指数退避的重试机制。
+        
+        使用场景:
+            1. 异步API调用：当OCR服务使用异步HTTP客户端（如aiohttp）调用外部API
+            2. 异步Web应用：在FastAPI或aiohttp等异步Web框架中使用OCR功能
+            3. 并发处理：需要同时处理多个OCR请求而不阻塞主线程
+            4. 异步工作流：作为异步数据处理管道的一部分
+
+        参数:
+            func: 要重试的异步函数
+            *args: 函数的位置参数
+            **kwargs: 函数的关键字参数
+
+        返回:
+            函数的返回值
+
+        抛出:
+            OCRError: 当所有重试都失败时
+        """
+        last_exception = None
+        
+        for attempt in range(self.max_retries + 1):
+            try:
+                # 异步等待函数执行完成并返回结果
+                return await func(*args, **kwargs)
+            except Exception as e:
+                last_exception = e
+                if attempt < self.max_retries:
+                    # 计算指数退避等待时间：1秒、2秒、4秒、8秒...
+                    wait_time = 2 ** attempt  # 指数退避策略，避免对服务器造成压力
+                    logger.warning(f"异步OCR调用失败 (尝试 {attempt + 1}/{self.max_retries + 1}): {str(e)}. {wait_time}秒后重试...")
+                    # 非阻塞等待，不会阻塞事件循环中的其他任务
+                    await asyncio.sleep(wait_time)  # 使用异步sleep而不是time.sleep，避免阻塞事件循环
+                else:
+                    # 所有重试都失败，记录最终错误
+                    logger.error(f"异步OCR调用在 {self.max_retries + 1} 次尝试后仍然失败: {str(e)}")
+        
+        # 抛出自定义异常，包含详细的错误信息
+        raise OCRError(f"异步OCR识别失败，已重试 {self.max_retries} 次: {str(last_exception)}")
+
     def get_model_info(self) -> dict:
         """
         返回关于 OCR 模型的信息。
         """
         return {
             "model_name": self.model_name,
+            "max_retries": self.max_retries,
+            "timeout": self.timeout,
             "config": self.config,
             "type": "OCRModel"
         }

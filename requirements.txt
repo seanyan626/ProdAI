@@ -19,5 +19,6 @@ llama-index
 # ruff # for linting and formatting
 
 # Other common libraries
-# requests
+requests
+aiohttp
 # pydantic
