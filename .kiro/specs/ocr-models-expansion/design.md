@@ -15,7 +15,7 @@ core/models/ocr/
 ├── openai_ocr_model.py        # OpenAI实现（已存在）
 ├── cloud/                     # 云服务OCR
 │   ├── __init__.py
-│   ├── aliyun_ocr_model.py    # 阿里云OCR
+│   ├── dashscope_ocr_model.py # DashScope OCR
 │   └── baidu_ocr_model.py     # 百度OCR
 ├── local/                     # 本地OCR
 │   ├── __init__.py
@@ -44,7 +44,7 @@ class OCRResult:
 #### 2. 具体OCR实现
 
 **云服务OCR**
-- **AliyunOCRModel**: 直接继承BaseOCRModel，调用阿里云API
+- **DashScopeOCRModel**: 直接继承BaseOCRModel，调用DashScope API
 - **BaiduOCRModel**: 直接继承BaseOCRModel，调用百度API
 
 **本地OCR**  
@@ -58,8 +58,8 @@ class OCRResult:
 class OCRFactory:
     @staticmethod
     def create_ocr(provider: str, **kwargs) -> BaseOCRModel:
-        if provider == "aliyun":
-            return AliyunOCRModel(**kwargs)
+        if provider == "dashscope" or provider == "aliyun":
+            return DashScopeOCRModel(**kwargs)
         elif provider == "baidu":
             return BaiduOCRModel(**kwargs)
         elif provider == "paddle":

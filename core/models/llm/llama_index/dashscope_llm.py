@@ -5,7 +5,7 @@ from typing import Optional, Any
 # 使用 OpenAILike 来封装兼容 OpenAI API 的模型
 from llama_index.llms.openai_like import OpenAILike
 
-from configs.config import DASHSCOPE_API_KEY, DASHSCOPE_API_URL, DASHSCOPE_MODEL_NAME, load_config
+from configs.config import DASHSCOPE_API_KEY, DASHSCOPE_API_URL, DASHSCOPE_LLM_MODEL_NAME, load_config
 from .base_llm import BaseLLM
 
 load_config()
@@ -21,7 +21,7 @@ class DashScopeLLM(BaseLLM):
 
     def __init__(
         self,
-        model_name: str = DASHSCOPE_MODEL_NAME,
+        model_name: str = DASHSCOPE_LLM_MODEL_NAME,
         api_key: Optional[str] = DASHSCOPE_API_KEY,
         api_base: Optional[str] = DASHSCOPE_API_URL,
         temperature: Optional[float] = 0.7,

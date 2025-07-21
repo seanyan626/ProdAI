@@ -14,8 +14,8 @@
   - 更新core/models/ocr/__init__.py导入新的组件
   - _需求: 3.1, 3.3_
 
-- [x] 3. 实现阿里云OCR模型
-  - 创建AliyunOCRModel类，继承BaseOCRModel
+- [x] 3. 实现DashScope OCR模型
+  - 创建DashScopeOCRModel类，继承BaseOCRModel
   - 实现recognize_text和arecognize_text方法
   - 添加API调用逻辑和响应解析
   - 实现基本的错误处理和重试机制

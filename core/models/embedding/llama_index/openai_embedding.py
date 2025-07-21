@@ -4,7 +4,7 @@ from typing import Optional
 
 from llama_index.embeddings.openai import OpenAIEmbedding as LlamaIndexOpenAIEmbedding
 
-from configs.config import OPENAI_API_KEY, OPENAI_API_BASE
+from configs.config import config
 
 logger = logging.getLogger(__name__)
 
@@ -17,9 +17,9 @@ class OpenAIEmbedding(LlamaIndexOpenAIEmbedding):
 
     def __init__(
         self,
-        model_name: str = "text-embedding-ada-002",
-        api_key: Optional[str] = OPENAI_API_KEY,
-        api_base: Optional[str] = OPENAI_API_BASE,
+        model_name: Optional[str] = None,
+        api_key: Optional[str] = None,
+        api_base: Optional[str] = None,
         **kwargs,
     ):
         """
@@ -30,6 +30,11 @@ class OpenAIEmbedding(LlamaIndexOpenAIEmbedding):
             api_key (str, optional): OpenAI API 密钥。
             api_base (str, optional): OpenAI API 端点。
         """
+        # 使用配置中的值作为默认值
+        model_name = model_name or config.openai.embedding_name or "text-embedding-ada-002"
+        api_key = api_key or config.openai.embedding_api_key or config.openai.api_key
+        api_base = api_base or config.openai.embedding_api_url or config.openai.api_base
+        
         super().__init__(
             model=model_name,
             api_key=api_key,
@@ -45,5 +50,6 @@ class OpenAIEmbedding(LlamaIndexOpenAIEmbedding):
         return {
             "model_name": self.model,
             "framework": "LlamaIndex",
-            "type": "Embedding"
+            "type": "Embedding",
+            "provider": "OpenAI"
         }

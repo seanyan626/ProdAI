@@ -8,7 +8,7 @@ OCR (光学字符识别) 模型模块
 
 from .base_ocr_model import BaseOCRModel, OCRResult, OCRError
 from .openai_ocr_model import OpenAIOCRModel
-from .ocr_factory import OCRFactory
+# OCRFactory 按需导入，避免触发自动注册
 
 # 导入子模块
 from . import cloud
@@ -16,20 +16,19 @@ from . import local
 
 # 导入具体的OCR模型
 try:
-    from .cloud.aliyun_ocr_model import AliyunOCRModel
+    from .cloud.dashscope_ocr_model import DashScopeOCRModel
 except ImportError:
-    AliyunOCRModel = None
+    DashScopeOCRModel = None
 
 __all__ = [
     "BaseOCRModel",
     "OCRResult", 
     "OCRError",
     "OpenAIOCRModel",
-    "OCRFactory",
     "cloud",
     "local"
 ]
 
 # 如果成功导入，添加到 __all__
-if AliyunOCRModel:
-    __all__.append("AliyunOCRModel")
+if DashScopeOCRModel:
+    __all__.append("DashScopeOCRModel")
